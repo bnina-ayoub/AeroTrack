@@ -1,0 +1,16 @@
+# Environnements virtuels
+venv/
+env/
+
+# Données et modèles lourds
+dataset/
+weights/
+YOLOX_outputs/
+# Fichiers générés automatiquement par Python (Recommandé)
+__pycache__/
+*.pyc
+*.pyo
+
+# Fichiers système (Recommandé)
+.DS_Store
+Thumbs.db
