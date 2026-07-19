@@ -11,7 +11,7 @@ Cette architecture permet de court-circuiter les couches profondes du réseau lo
 Regardez l'architecture AeroTrack (Early Exit + NWD) en action :
 
 <div align="center">
-  <video src="YOLOX_outputs/aerotrack_early_exit_nwd/track_vis/2026_07_19_17_26_11/videoplayback.mp4" width="100%" controls="controls">
+  <video src="docs/videoplayback.mp4" width="100%" controls="controls">
     Votre navigateur ne supporte pas la lecture de la vidéo.
   </video>
 </div>
