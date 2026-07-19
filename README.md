@@ -12,7 +12,10 @@ Regardez l'architecture AeroTrack (Early Exit + NWD) en action :
 
 
 
-https://github.com/user-attachments/assets/3e071a43-8371-427b-b03f-aa1b96ea34f0
+https://github.com/user-attachments/assets/ca8e1d86-d2df-4852-928f-89b6337f349b
+
+
+
 
 
 ---
