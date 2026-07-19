@@ -10,11 +10,10 @@ Cette architecture permet de court-circuiter les couches profondes du réseau lo
 
 Regardez l'architecture AeroTrack (Early Exit + NWD) en action :
 
-<div align="center">
-  <video src="docs/videoplayback.mp4" width="100%" controls="controls">
-    Votre navigateur ne supporte pas la lecture de la vidéo.
-  </video>
-</div>
+
+
+https://github.com/user-attachments/assets/3e071a43-8371-427b-b03f-aa1b96ea34f0
+
 
 ---
 
