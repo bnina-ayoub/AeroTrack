@@ -6,14 +6,14 @@ Cette architecture permet de court-circuiter les couches profondes du réseau lo
 
 ---
 
-## 📸 Démonstration Visuelle (Tracking Frames)
+## 🎥 Démonstration Vidéo
 
-<!-- Remplace les liens des images ci-dessous par les chemins vers tes vraies images générées dans le dossier track_vis -->
+Regardez l'architecture AeroTrack (Early Exit + NWD) en action :
+
 <div align="center">
-  <img src="docs/tracking_example_baseline.jpg" width="45%" alt="Baseline Tracking">
-  <img src="docs/tracking_example_early_exit.jpg" width="45%" alt="Early Exit Tracking">
-  <br>
-  <em>À gauche : Exécution via le chemin complet (Baseline). À droite : Exécution optimisée via la sortie anticipée (Early Exit).</em>
+  <video src="YOLOX_outputs/aerotrack_early_exit_nwd/track_vis/2026_07_19_17_26_11/videoplayback.mp4" width="100%" controls="controls">
+    Votre navigateur ne supporte pas la lecture de la vidéo.
+  </video>
 </div>
 
 ---

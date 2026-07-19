@@ -37,6 +37,10 @@ def build_demo_parser():
     parser.add_argument("--aspect_ratio_thresh", type=float, default=1.6)
     parser.add_argument("--min_box_area", type=float, default=10)
     parser.add_argument("--mot20", action="store_true")
+    
+    # --- AJOUTS : Options pour l'architecture AeroTrack ---
+    parser.add_argument("--distance", type=str, default="nwd", choices=["nwd", "iou"], help="distance metric for tracking")
+    parser.add_argument("--early_exit", dest="early_exit", default=False, action="store_true", help="Activer le routage dynamique Early Exit.")
     return parser
 
 def extract_base_gflops(model_info_string):
@@ -72,7 +76,7 @@ class VisualInferenceEngine:
             "raw_frame": raw_frame
         }
         
-        normalized_tensor, processing_scale_ratio = preproc(raw_frame, self.target_input_dimensions, (0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+        normalized_tensor, processing_scale_ratio = preproc(raw_frame, self.target_input_dimensions)
         frame_metadata["ratio"] = processing_scale_ratio
         
         execution_tensor = torch.from_numpy(normalized_tensor).unsqueeze(0).float().to(self.execution_device)
@@ -106,7 +110,8 @@ def execute_video_stream(inference_engine, output_directory, execution_arguments
         save_path = os.path.join(save_folder, os.path.basename(execution_arguments.path) if execution_arguments.demo == "video" else "camera.mp4")
         video_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*"mp4v"), video_fps, (int(video_width), int(video_height)))
         
-    tracking_engine = BYTETracker(execution_arguments, frame_rate=30, distance_metric=getattr(experiment_configuration, "tracking_distance_metric", "iou"))
+    # --- AJOUT : Utilisation dynamique de la distance demandée dans le terminal ---
+    tracking_engine = BYTETracker(execution_arguments, frame_rate=30, distance_metric=execution_arguments.distance)
     performance_timer = Timer()
     
     current_frame_index = 0
@@ -170,9 +175,18 @@ def main():
     parsed_arguments = build_demo_parser().parse_args()
     active_experiment = get_exp(parsed_arguments.exp_file, parsed_arguments.name)
     
+    # --- AJOUT : Nommer le dossier de sortie comme dans track.py ---
+    if not hasattr(parsed_arguments, 'distance') or parsed_arguments.distance == 'nwd':
+        if hasattr(active_experiment, 'distance'): parsed_arguments.distance = active_experiment.distance
+        
+    mode_name = "early_exit" if parsed_arguments.early_exit else "baseline"
+    
     if not parsed_arguments.experiment_name:
         parsed_arguments.experiment_name = active_experiment.exp_name
         
+    parsed_arguments.experiment_name = f"{parsed_arguments.experiment_name}_{mode_name}_{parsed_arguments.distance}"
+    # ---------------------------------------------------------------
+    
     target_output_directory = os.path.join(active_experiment.output_dir, parsed_arguments.experiment_name)
     os.makedirs(target_output_directory, exist_ok=True)
     
@@ -189,6 +203,9 @@ def main():
     if parsed_arguments.tsize is not None:
         active_experiment.test_size = (parsed_arguments.tsize, parsed_arguments.tsize)
         
+    # --- AJOUT : Activer dynamiquement le Early Exit avant la création du modèle ---
+    active_experiment.early_exit_enabled = parsed_arguments.early_exit
+    
     configured_model = active_experiment.get_model().to(computed_device)
     model_architecture_info = get_model_info(configured_model, active_experiment.test_size)
     base_gflops = extract_base_gflops(model_architecture_info)
