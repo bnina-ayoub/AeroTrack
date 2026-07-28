@@ -6,7 +6,7 @@
 
 # 1. Variables de configuration (À ajuster selon ton projet)
 EXP_FILE="exps/aerotrack_proposed.py"
-CKPT_FILE="weights/early_exit_weights.pth" # <-- Remplace ceci par le chemin exact de tes poids
+CKPT_FILE="weights/early_exit_head_dark3.pth" # <-- Remplace ceci par le chemin exact de tes poids
 
 echo "========================================================================"
 echo "🚀 Lancement des 4 expériences d'évaluation automatisées"

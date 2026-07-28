@@ -224,8 +224,64 @@ def _build_sequence_frames_from_annotations(data_dir, split_name, ann_file):
     for seq_name in seq_frames: seq_frames[seq_name].sort(key=lambda x: x[0])
     return seq_frames
 
+def get_target_count(frame_tracks: dict) -> int:
+    if frame_tracks is None:
+        return 0
+    return len(frame_tracks.get("tlwhs", []))
 
-def render_tracking_visualizations(exp, results_folder, vis_output_dir, make_video=False, video_fps=60):
+def append_branch_telemetry(vis_frame: np.ndarray, frame_id: int, pipeline_fps: float, target_count: int, branch_label: str) -> None:
+    base_string = f"frame: {frame_id} fps: {pipeline_fps:.2f} num: {target_count}"
+    offset_x = cv2.getTextSize(base_string, cv2.FONT_HERSHEY_PLAIN, 2, 2)[0][0] + 6
+    cv2.putText(vis_frame, f", {branch_label}", (offset_x, 30), cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), 2)
+
+
+def overlay_pipeline_telemetry(
+    frame: np.ndarray, 
+    frame_index: int, 
+    target_count: int, 
+    pipeline_fps: float, 
+    branch_label: str
+) -> np.ndarray:
+    header_x_coordinate = 10
+    header_y_coordinate = 35
+    text_font_scale = 2
+    text_font_thickness = 2
+    
+    pipeline_latency_ms = 1000.0 / max(pipeline_fps, 1e-5)
+    
+    telemetry_data = f"Frame: {frame_index} | Infer: {pipeline_latency_ms:.2f} ms ({pipeline_fps:.1f} FPS) | Targets: {target_count} | Path: {branch_label}"
+    
+    text_dimensions, text_baseline = cv2.getTextSize(
+        telemetry_data, 
+        cv2.FONT_HERSHEY_PLAIN, 
+        text_font_scale, 
+        text_font_thickness
+    )
+    
+    background_top_left = (header_x_coordinate - 5, header_y_coordinate - text_dimensions[1] - 5)
+    background_bottom_right = (header_x_coordinate + text_dimensions[0] + 5, header_y_coordinate + text_baseline + 5)
+    
+    cv2.rectangle(
+        frame, 
+        background_top_left, 
+        background_bottom_right, 
+        (0, 0, 0), 
+        -1
+    )
+    
+    cv2.putText(
+        frame, 
+        telemetry_data, 
+        (header_x_coordinate, header_y_coordinate), 
+        cv2.FONT_HERSHEY_PLAIN, 
+        text_font_scale, 
+        (255, 255, 255), 
+        text_font_thickness
+    )
+    
+    return frame
+
+def render_tracking_visualizations(exp, results_folder, vis_output_dir, pipeline_fps, make_video=False, video_fps=30):
     seq_frames = _build_sequence_frames_from_annotations(exp.data_dir, "test", exp.val_ann)
     os.makedirs(vis_output_dir, exist_ok=True)
     result_files = sorted(glob.glob(os.path.join(results_folder, "*.txt")))
@@ -233,7 +289,8 @@ def render_tracking_visualizations(exp, results_folder, vis_output_dir, make_vid
     total_images = 0
     for result_txt in result_files:
         seq_name = os.path.splitext(os.path.basename(result_txt))[0]
-        if seq_name not in seq_frames: continue
+        if seq_name not in seq_frames: 
+            continue
 
         tracks_by_frame = _load_tracking_results(result_txt)
         branch_by_frame = _load_branch_results(os.path.join(results_folder, f"{seq_name}_branch.csv"))
@@ -244,31 +301,42 @@ def render_tracking_visualizations(exp, results_folder, vis_output_dir, make_vid
 
         for frame_id, image_path in seq_frames[seq_name]:
             frame = cv2.imread(image_path)
-            if frame is None: continue
+            if frame is None: 
+                continue
 
             frame_tracks = tracks_by_frame.get(frame_id)
             branch_label = branch_by_frame.get(frame_id, "Full")
+            
+            # This built-in YOLOX function automatically draws "frame: X fps: Y num: Z"
             vis_frame = plot_tracking(
                 frame, 
                 [] if frame_tracks is None else frame_tracks["tlwhs"], 
                 [] if frame_tracks is None else frame_tracks["track_ids"], 
                 scores=None if frame_tracks is None else frame_tracks["scores"], 
-                frame_id=frame_id, fps=float(video_fps)
+                frame_id=frame_id, 
+                fps=pipeline_fps
             )
 
-            cv2.putText(vis_frame, f", {branch_label}", (cv2.getTextSize(f"frame: {frame_id} fps: {float(video_fps):.2f} num: {0 if frame_tracks is None else len(frame_tracks['tlwhs'])}", cv2.FONT_HERSHEY_PLAIN, 2, 2)[0][0] + 6, int(15 * 2)), cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), thickness=2)
+            target_count = get_target_count(frame_tracks)
+
+            # This appends your custom branch label right next to the YOLOX text!
+            append_branch_telemetry(vis_frame, frame_id, pipeline_fps, target_count, branch_label)
+
+            # Save the frame using vis_frame
             cv2.imwrite(os.path.join(sequence_output_dir, os.path.basename(image_path)), vis_frame)
             total_images += 1
 
+            # Write the frame to the video
             if make_video:
                 if video_writer is None:
                     fourcc_fn = getattr(cv2, "VideoWriter_fourcc", None)
-                    if fourcc_fn is not None: video_writer = cv2.VideoWriter(video_path, fourcc_fn(*"mp4v"), float(video_fps), (vis_frame.shape[1], vis_frame.shape[0]))
-                if video_writer is not None: video_writer.write(vis_frame)
+                    if fourcc_fn is not None: 
+                        video_writer = cv2.VideoWriter(video_path, fourcc_fn(*"mp4v"), float(video_fps), (vis_frame.shape[1], vis_frame.shape[0]))
+                if video_writer is not None: 
+                    video_writer.write(vis_frame)
 
-        if video_writer is not None: video_writer.release()
-    logger.info(f"Saved {total_images} visualized images to {vis_output_dir}")
-
+        if video_writer is not None: 
+            video_writer.release()
 
 @logger.catch
 def main(exp, args, num_gpu):
@@ -413,9 +481,6 @@ def main(exp, args, num_gpu):
             else:
                 logger.info(f"early exits {total_early}/{total_total} ({total_early/total_total:.1%})")
 
-    # ---------------------------------------------------------
-    # Chargement robuste des fichiers GT et Test
-    # ---------------------------------------------------------
     mm.lap.default_solver = 'lap'
     gt_type = '_val_half' if exp.val_ann == 'val_half.json' else ''
     
@@ -465,9 +530,18 @@ def main(exp, args, num_gpu):
     summary_df.to_csv(csv_output_path)
 
     if rank == 0 and args.save_vis:
-       render_tracking_visualizations(exp, results_folder, args.vis_output if args.vis_output else os.path.join(file_name, "track_vis"), make_video=args.vis_video, video_fps=args.vis_fps)
+       render_tracking_visualizations(
+           exp, 
+           results_folder, 
+           args.vis_output if args.vis_output else os.path.join(file_name, "track_vis"), 
+           pipeline_fps=pipeline_fps,
+           make_video=args.vis_video, 
+           video_fps=args.vis_fps
+       )
     logger.info(f"Latency: {hardware_latency:.2f} ms/img | FPS: {1000.0/hardware_latency:.2f}")
     logger.info('Completed')
+
+
 
 if __name__ == "__main__":
     args = make_parser().parse_args()

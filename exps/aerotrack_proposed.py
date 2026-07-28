@@ -33,14 +33,13 @@ class Exp(UAVSwarmBaseExperiment):
             self.model = YOLOX(
                 backbone=backbone,
                 head=head,
-                decision_gate_min_confidence=0.7,
-                decision_gate_max_area=1016.0,
+                decision_gate_min_confidence=0.75,
+                decision_gate_max_area=1005.0,
                 decision_gate_uncertainty_lower=0.25,
                 decision_gate_uncertainty_upper=0.30,
-                empty_sky_threshold=0.15,
+                empty_sky_threshold=0.20,
                 early_exit_layer="dark3",
                 early_exit_enabled = getattr(self, "early_exit_enabled", False),
-                
             )
         
         self.model.apply(self.configure_batch_normalization)
