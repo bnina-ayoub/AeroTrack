@@ -1,97 +1,93 @@
 # 🚁 AeroTrack: Dynamic Early-Exit Architecture for UAV Tracking
 
-AeroTrack est une architecture de suivi d'objets (Object Tracking) optimisée pour les véhicules aériens sans pilote (UAV). Basée sur le framework YOLOX, notre approche introduit un mécanisme de routage dynamique innovant (**Early Exit**) piloté par un **Decision Gate**.
+AeroTrack is an object tracking architecture optimized for Unmanned Aerial Vehicles (UAVs). Built on the solid foundations of the **[YOLOX](https://github.com/Megvii-BaseDetection/YOLOX)** detection framework and the **[ByteTrack](https://github.com/ifzhang/ByteTrack)** tracking engine, our approach introduces an innovative dynamic routing mechanism (**Early Exit**) driven by a **Decision Gate**.
 
-Cette architecture permet de court-circuiter les couches profondes du réseau lorsque la confiance de détection est suffisante, offrant une réduction drastique du coût computationnel (GFLOPs) sans sacrifier la précision du suivi grâce aux métriques de distance IoU et NWD.
-
----
-
-## 🎥 Démonstration Vidéo
-
-Regardez l'architecture AeroTrack (Early Exit + NWD) en action :
-
-<div align="center">
-  <video src="docs/videoplayback.mp4" width="100%" controls="controls">
-    Votre navigateur ne supporte pas la lecture de la vidéo.
-  </video>
-</div>
+This architecture makes it possible to bypass the network's deep layers when detection confidence is high enough, delivering a drastic reduction in computational cost (GFLOPs) without sacrificing tracking accuracy, thanks to the IoU and NWD distance metrics.
 
 ---
 
-## ⚙️ Installation et Configuration
+## 🎥 Video Demonstration
 
-Pour exécuter AeroTrack, vous devez configurer l'environnement Python et installer YOLOX.
+AeroTrack architecture (Early Exit + NWD) in action:
 
-### 1. Prérequis environnementaux
+https://github.com/user-attachments/assets/ca8e1d86-d2df-4852-928f-89b6337f349b
 
-Il est recommandé d'utiliser un environnement virtuel (Conda ou venv) avec **Python 3.8+** et **PyTorch** compatible avec votre version de CUDA.
+---
+
+## ⚙️ Installation and Setup
+
+To run AeroTrack, you need to set up the Python environment and install YOLOX.
+
+### 1. Environment Prerequisites
+
+It is recommended to use a virtual environment (Conda or venv) with **Python 3.8+** and a version of **PyTorch** compatible with your CUDA version.
 
 ```bash
-# Exemple avec venv
+# Example with venv
 python3 -m venv venv
 source venv/bin/activate
 ```
 
-### 2. Installation des dépendances et de YOLOX
+### 2. Installing Dependencies and YOLOX
 
-AeroTrack s'appuie sur le moteur YOLOX. Exécutez les commandes suivantes à la racine du projet pour installer les dépendances requises et lier le projet.
+AeroTrack relies on the YOLOX engine. Run the following commands from the project root to install the required dependencies and link the project.
 
 ```bash
-# Installation des dépendances de base
+# Install base dependencies
 pip install -r requirements.txt
 
-# Installation de YOLOX en mode développement
+# Install YOLOX in development mode
 pip install -v -e .
 
-# Installation des dépendances spécifiques au tracking (MOT)
+# Install tracking-specific dependencies (MOT)
 pip install cython
 pip install cython_bbox
 pip install motmetrics
 ```
 
-### 3. Préparation des poids (Weights)
+### 3. Preparing the Weights
 
-Assurez-vous de placer votre fichier de poids entraîné (`early_exit_weights.pth`) dans le dossier `weights/` à la racine du projet.
+Make sure to place your trained weights file (`early_exit_weights.pth`) in the `weights/` folder at the project root.
 
 ---
 
-## 🚀 Évaluation et Inférence
+## 🚀 Evaluation and Inference
 
-Nous avons mis en place un script d'automatisation robuste pour tester l'architecture sous toutes ses configurations de manière fluide.
+We've set up a robust automation script to test the architecture across all its configurations smoothly.
 
-### Exécution automatisée (Recommandé)
+### Automated Run (Recommended)
 
-Le script `run_evaluations.sh` exécute automatiquement 4 expériences en croisant les métriques de distance (IoU / NWD) et l'activation du routage dynamique (Baseline / Early Exit).
+The `run_evaluations.sh` script automatically runs 4 experiments, combining the distance metrics (IoU / NWD) with the activation of dynamic routing (Baseline / Early Exit).
 
-Pour lancer l'évaluation complète :
+To launch the full evaluation:
 
 ```bash
-# 1. Donner les droits d'exécution au script
+# 1. Grant execution rights to the script
 chmod +x run_evaluations.sh
 
-# 2. Lancer l'évaluation
+# 2. Run the evaluation
 ./run_evaluations.sh
 ```
 
-Le script exécutera la commande suivante en coulisse pour chaque mode :
+Under the hood, the script runs the following command for each mode:
 
 ```bash
 python tools/track.py --fp16 --fuse -d 1 -b 1 -f exps/aerotrack_proposed.py -c weights/early_exit_weights.pth --distance <metric> [--early_exit] --save_vis
 ```
 
-### Analyse des Résultats
+### Results Analysis
 
-Pour chaque expérience, AeroTrack générera un dossier de résultats spécifique contenant :
+For each experiment, AeroTrack will generate a dedicated results folder containing:
 
-- **`mot_evaluation_metrics.csv`** : Les résultats détaillés du tracking (MOTA, IDF1, FPS, etc.).
-- **`early_exit_stats.csv`** : Le ratio exact des trames ayant emprunté le chemin court et les GFLOPs effectifs économisés.
-- **`track_vis/`** : Un dossier contenant les visualisations image par image du suivi de l'UAV avec l'indication du chemin emprunté (Early Exit ou Full).
+- **`mot_evaluation_metrics.csv`**: Detailed tracking results (MOTA, IDF1, FPS, etc.).
+- **`early_exit_stats.csv`**: The exact ratio of frames that took the short path and the effective GFLOPs saved.
+- **`track_vis/`**: A folder containing frame-by-frame visualizations of the UAV tracking, indicating which path was taken (Early Exit or Full).
 
 ---
 
-## 📝 Structure du Projet
+## 📝 Project Structure
 
-- **`tools/track.py`** : Script principal pour lancer l'inférence et le suivi MOT.
-- **`exps/aerotrack_proposed.py`** : Fichier de définition de notre architecture unifiée.
-- **`run_evaluations.sh`** : Script Bash pour l'automatisation des évaluations comparatives.
-- **`yolox/`** : Code source du modèle contenant la logique du `DecisionGate` et de l'`EarlyHead`.
+- **`tools/track.py`**: Main script for launching inference and MOT tracking.
+- **`exps/aerotrack_proposed.py`**: Definition file for our unified architecture.
+- **`run_evaluations.sh`**: Bash script for automating comparative evaluations.
+- **`yolox/`**: Model source code containing the `DecisionGate` and `EarlyHead` logic.
