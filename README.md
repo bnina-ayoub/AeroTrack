@@ -1,4 +1,4 @@
-# 🚁 AeroTrack: Dynamic Early-Exit Architecture for UAV Tracking
+# 🚁 AeroTrack
 
 AeroTrack is an object tracking architecture optimized for Unmanned Aerial Vehicles (UAVs). Built on the solid foundations of the **[YOLOX](https://github.com/Megvii-BaseDetection/YOLOX)** detection framework and the **[ByteTrack](https://github.com/ifzhang/ByteTrack)** tracking engine, our approach introduces an innovative dynamic routing mechanism (**Early Exit**) driven by a **Decision Gate**.
 
