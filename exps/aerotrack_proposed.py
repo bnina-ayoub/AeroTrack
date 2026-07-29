@@ -9,9 +9,9 @@ class Exp(UAVSwarmBaseExperiment):
         self.p3_only_gflops = 13.46
 
     def get_model(self):
-        from yolox.models.yolo_pafpn import YOLOPAFPN
-        from yolox.models.yolo_head import YOLOXHead
-        from yolox.models.yolox import YOLOX
+        from aerotrack.models.yolo_pafpn import YOLOPAFPN
+        from aerotrack.models.yolo_head import YOLOXHead
+        from aerotrack.models.yolox import YOLOX
         
         if getattr(self, "model", None) is None:
             in_channels = [256, 512, 1024]
