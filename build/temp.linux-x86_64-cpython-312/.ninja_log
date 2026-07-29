@@ -1,0 +1,4 @@
+# ninja log v7
+0	7422	1785269460859885436	/home/bninaos/UAV-Tracking-Project/AeroTrack/build/temp.linux-x86_64-cpython-312/home/bninaos/UAV-Tracking-Project/AeroTrack/aerotrack/layers/csrc/cocoeval/cocoeval.o	3db36151adac9181
+1	8546	1785269460860885449	/home/bninaos/UAV-Tracking-Project/AeroTrack/build/temp.linux-x86_64-cpython-312/home/bninaos/UAV-Tracking-Project/AeroTrack/aerotrack/layers/csrc/vision.o	3c35a738a287a47b
+0	1215	1785269469616996774	/home/bninaos/UAV-Tracking-Project/AeroTrack/build/temp.linux-x86_64-cpython-312/aerotrack/tracker/cython_nwd.o	690a59a06c55cef8

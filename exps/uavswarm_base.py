@@ -1,5 +1,5 @@
 import os
-from yolox.exp.yolox_base import Exp as YoloXBaseExperiment
+from aerotrack.exp.yolox_base import Exp as YoloXBaseExperiment
 import torch.distributed
 import torch
 import torch.nn as nn
@@ -23,8 +23,8 @@ class UAVSwarmBaseExperiment(YoloXBaseExperiment):
             module.momentum = 0.03
 
     def get_data_loader(self, batch_size, is_distributed, no_aug=False, cache_img=False):
-        from yolox.data import MOTDataset, TrainTransform, InfiniteSampler, YoloBatchSampler, DataLoader, MosaicDetection
-        from yolox.utils import wait_for_the_master
+        from aerotrack.data import MOTDataset, TrainTransform, InfiniteSampler, YoloBatchSampler, DataLoader, MosaicDetection
+        from aerotrack.utils import wait_for_the_master
         
         with wait_for_the_master():
             base_dataset = MOTDataset(
@@ -53,7 +53,7 @@ class UAVSwarmBaseExperiment(YoloXBaseExperiment):
         return DataLoader(augmented_dataset, num_workers=self.data_num_workers, pin_memory=True, batch_sampler=batch_sampler)
 
     def get_eval_loader(self, batch_size, is_distributed, testdev=False, legacy=False):
-        from yolox.data import MOTDataset, ValTransform
+        from aerotrack.data import MOTDataset, ValTransform
         val_dataset = MOTDataset(
             data_dir=self.data_dir,
             json_file=self.val_ann,
@@ -65,7 +65,7 @@ class UAVSwarmBaseExperiment(YoloXBaseExperiment):
         return torch.utils.data.DataLoader(val_dataset, num_workers=self.data_num_workers, pin_memory=True, sampler=sampler, batch_size=batch_size)
 
     def get_evaluator(self, batch_size, is_distributed, testdev=False, legacy=False):
-        from yolox.evaluators import COCOEvaluator
+        from aerotrack.evaluators import COCOEvaluator
         return COCOEvaluator(
             dataloader=self.get_eval_loader(batch_size, is_distributed, testdev, legacy),
             img_size=self.test_size,

@@ -3,8 +3,8 @@ from loguru import logger
 import torch
 import torch.backends.cudnn as cudnn
 
-from yolox.core import Trainer, launch
-from yolox.exp import get_exp
+from aerotrack.core import Trainer, launch
+from aerotrack.exp import get_exp
 
 import argparse
 import random

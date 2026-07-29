@@ -6,12 +6,12 @@ import cv2
 import torch
 from loguru import logger
 
-from yolox.data.data_augment import preproc
-from yolox.exp import get_exp
-from yolox.utils import fuse_model, get_model_info, postprocess
-from yolox.utils.visualize import plot_tracking
-from yolox.tracker.byte_tracker import BYTETracker
-from yolox.tracking_utils.timer import Timer
+from aerotrack.data.data_augment import preproc
+from aerotrack.exp import get_exp
+from aerotrack.utils import fuse_model, get_model_info, postprocess
+from aerotrack.utils.visualize import plot_tracking
+from aerotrack.tracker.byte_tracker import BYTETracker
+from aerotrack.tracking_utils.timer import Timer
 
 def build_demo_parser():
     parser = argparse.ArgumentParser("AeroTrack Live Demonstration Engine")

@@ -17,7 +17,8 @@ assert torch_ver >= [1, 3], "Requires PyTorch >= 1.3"
 
 def get_extensions():
     this_dir = path.dirname(path.abspath(__file__))
-    extensions_dir = path.join(this_dir, "yolox", "layers", "csrc")
+    # Updated path to aerotrack
+    extensions_dir = path.join(this_dir, "aerotrack", "layers", "csrc")
 
     main_source = path.join(extensions_dir, "vision.cpp")
     sources = glob.glob(path.join(extensions_dir, "**", "*.cpp"))
@@ -32,7 +33,7 @@ def get_extensions():
 
     ext_modules = [
         extension(
-            "yolox._C",
+            "aerotrack._C", # Updated extension name
             sources,
             include_dirs=include_dirs,
             define_macros=define_macros,
@@ -43,7 +44,8 @@ def get_extensions():
     return ext_modules
 
 
-with open("yolox/__init__.py", "r") as f:
+# Updated path to aerotrack's __init__.py
+with open("aerotrack/__init__.py", "r") as f:
     version = re.search(
         r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
         f.read(), re.MULTILINE
@@ -52,13 +54,13 @@ with open("yolox/__init__.py", "r") as f:
 with open("README.md", "r") as f:
     long_description = f.read()
 
-# 1. On récupère les extensions existantes de YOLOX
+# 1. On récupère les extensions existantes de YOLOX (désormais aerotrack)
 ext_modules = get_extensions()
 
-# 2. On déclare notre nouvelle extension Cython NWD
+# 2. On déclare notre nouvelle extension Cython NWD avec les nouveaux chemins
 nwd_extension = Extension(
-    name="yolox.tracker.cython_nwd",
-    sources=["yolox/tracker/cython_nwd.pyx"],
+    name="aerotrack.tracker.cython_nwd",
+    sources=["aerotrack/tracker/cython_nwd.pyx"],
     include_dirs=[numpy.get_include()]
 )
 
@@ -66,7 +68,7 @@ nwd_extension = Extension(
 ext_modules.extend(cythonize([nwd_extension], compiler_directives={'language_level': "3"}))
 
 setuptools.setup(
-    name="yolox",
+    name="aerotrack", # Updated package name
     version=version,
     author="basedet team",
     python_requires=">=3.6",

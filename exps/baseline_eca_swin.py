@@ -8,9 +8,9 @@ class Exp(UAVSwarmBaseExperiment):
         self.tracking_distance_metric = "nwd"
 
     def get_model(self):
-        from yolox.models.yolo_pafpn import YOLOPAFPN
-        from yolox.models.yolo_head import YOLOXHead
-        from yolox.models.yolox import YOLOX
+        from aerotrack.models.yolo_pafpn import YOLOPAFPN
+        from aerotrack.models.yolo_head import YOLOXHead
+        from aerotrack.models.yolox import YOLOX
         
         if getattr(self, "model", None) is None:
             in_channels = [256, 512, 1024]

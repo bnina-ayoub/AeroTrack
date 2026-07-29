@@ -2,6 +2,7 @@ import argparse
 import os
 import random
 import re
+import sys
 import numpy as np
 import warnings
 import glob
@@ -17,15 +18,30 @@ import torch.backends.cudnn as cudnn
 from torch.nn.parallel import DistributedDataParallel as DDP
 from loguru import logger
 
-from yolox.core import launch
-from yolox.exp import get_exp
-from yolox.utils import configure_nccl, fuse_model, get_local_rank, get_model_info, setup_logger
-from yolox.evaluators import MOTEvaluator
-from yolox.utils.visualize import plot_tracking
+# -----------------------------------------------------------------------------
+# 1. Environment & Path Configuration
+# -----------------------------------------------------------------------------
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)  # Priority to custom aerotrack package
+
+# Submodule path for baseline ByteTrack imports
+BYTETRACK_SUBMODULE = os.path.join(ROOT, "third_party", "ByteTrack")
+if os.path.exists(BYTETRACK_SUBMODULE) and BYTETRACK_SUBMODULE not in sys.path:
+    sys.path.append(BYTETRACK_SUBMODULE)
+
+# -----------------------------------------------------------------------------
+# 2. AeroTrack Imports
+# -----------------------------------------------------------------------------
+from aerotrack.core import launch
+from aerotrack.exp import get_exp
+from aerotrack.utils import configure_nccl, fuse_model, get_local_rank, get_model_info, setup_logger
+from aerotrack.evaluators import MOTEvaluator
+from aerotrack.utils.visualize import plot_tracking
 
 
 def make_parser():
-    parser = argparse.ArgumentParser("YOLOX Eval")
+    parser = argparse.ArgumentParser("AeroTrack Evaluation & Tracking")
     parser.add_argument("-expn", "--experiment-name", type=str, default=None)
     parser.add_argument("-n", "--name", type=str, default=None, help="model name")
     parser.add_argument("--dist-backend", default="nccl", type=str, help="distributed backend")
@@ -35,7 +51,7 @@ def make_parser():
     parser.add_argument("--local_rank", default=0, type=int, help="local rank for dist training")
     parser.add_argument("--num_machines", default=1, type=int, help="num of node for training")
     parser.add_argument("--machine_rank", default=0, type=int, help="node rank for multi-node training")
-    parser.add_argument("-f", "--exp_file", default=None, type=str, help="pls input your expriment description file")
+    parser.add_argument("-f", "--exp_file", default=None, type=str, help="pls input your experiment description file")
     parser.add_argument("--fp16", dest="fp16", default=False, action="store_true", help="Adopting mix precision evaluating.")
     parser.add_argument("--fuse", dest="fuse", default=False, action="store_true", help="Fuse conv and bn for testing.")
     parser.add_argument("--trt", dest="trt", default=False, action="store_true", help="Using TensorRT model for testing.")
@@ -82,33 +98,18 @@ def parse_gflops_from_model_info(model_info):
 
 
 def compute_effective_gflops(early_count, total_count, full_network_gflops, p3_only_gflops):
-    """
-    Calcule les GFLOPs effectifs en utilisant uniquement des mesures réelles.
-    
-    Paramètres :
-    - early_count (int) : Nombre de trames ayant emprunté la sortie anticipée.
-    - total_count (int) : Nombre total de trames évaluées.
-    - full_network_gflops (float) : Coût mesuré du chemin complet (Baseline).
-    - p3_only_gflops (float) : Coût mesuré du chemin Early Exit (P3).
-    """
-    # Validation stricte des données
     if total_count <= 0:
         raise ValueError("total_count doit être supérieur à zéro.")
-    
     if full_network_gflops is None or p3_only_gflops is None:
         raise ValueError("Les valeurs GFLOPs (full et P3) sont requises pour une mesure exacte.")
 
-    # Calcul des ratios
     exit_rate = early_count / total_count
     deep_rate = 1.0 - exit_rate
-    
-    # Calcul de la moyenne pondérée (GFLOPs réels exécutés)
     effective_gflops = (exit_rate * p3_only_gflops) + (deep_rate * full_network_gflops)
-    
-    # Calcul du pourcentage d'économie
     gflops_reduction = (1.0 - (effective_gflops / full_network_gflops)) * 100.0
     
     return effective_gflops, gflops_reduction, exit_rate
+
 
 def ensure_coco_json_exists(data_dir, json_filename, is_mot20=False):
     annotations_dir = os.path.join(data_dir, "annotations")
@@ -224,62 +225,18 @@ def _build_sequence_frames_from_annotations(data_dir, split_name, ann_file):
     for seq_name in seq_frames: seq_frames[seq_name].sort(key=lambda x: x[0])
     return seq_frames
 
+
 def get_target_count(frame_tracks: dict) -> int:
     if frame_tracks is None:
         return 0
     return len(frame_tracks.get("tlwhs", []))
+
 
 def append_branch_telemetry(vis_frame: np.ndarray, frame_id: int, pipeline_fps: float, target_count: int, branch_label: str) -> None:
     base_string = f"frame: {frame_id} fps: {pipeline_fps:.2f} num: {target_count}"
     offset_x = cv2.getTextSize(base_string, cv2.FONT_HERSHEY_PLAIN, 2, 2)[0][0] + 6
     cv2.putText(vis_frame, f", {branch_label}", (offset_x, 30), cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), 2)
 
-
-def overlay_pipeline_telemetry(
-    frame: np.ndarray, 
-    frame_index: int, 
-    target_count: int, 
-    pipeline_fps: float, 
-    branch_label: str
-) -> np.ndarray:
-    header_x_coordinate = 10
-    header_y_coordinate = 35
-    text_font_scale = 2
-    text_font_thickness = 2
-    
-    pipeline_latency_ms = 1000.0 / max(pipeline_fps, 1e-5)
-    
-    telemetry_data = f"Frame: {frame_index} | Infer: {pipeline_latency_ms:.2f} ms ({pipeline_fps:.1f} FPS) | Targets: {target_count} | Path: {branch_label}"
-    
-    text_dimensions, text_baseline = cv2.getTextSize(
-        telemetry_data, 
-        cv2.FONT_HERSHEY_PLAIN, 
-        text_font_scale, 
-        text_font_thickness
-    )
-    
-    background_top_left = (header_x_coordinate - 5, header_y_coordinate - text_dimensions[1] - 5)
-    background_bottom_right = (header_x_coordinate + text_dimensions[0] + 5, header_y_coordinate + text_baseline + 5)
-    
-    cv2.rectangle(
-        frame, 
-        background_top_left, 
-        background_bottom_right, 
-        (0, 0, 0), 
-        -1
-    )
-    
-    cv2.putText(
-        frame, 
-        telemetry_data, 
-        (header_x_coordinate, header_y_coordinate), 
-        cv2.FONT_HERSHEY_PLAIN, 
-        text_font_scale, 
-        (255, 255, 255), 
-        text_font_thickness
-    )
-    
-    return frame
 
 def render_tracking_visualizations(exp, results_folder, vis_output_dir, pipeline_fps, make_video=False, video_fps=30):
     seq_frames = _build_sequence_frames_from_annotations(exp.data_dir, "test", exp.val_ann)
@@ -307,7 +264,6 @@ def render_tracking_visualizations(exp, results_folder, vis_output_dir, pipeline
             frame_tracks = tracks_by_frame.get(frame_id)
             branch_label = branch_by_frame.get(frame_id, "Full")
             
-            # This built-in YOLOX function automatically draws "frame: X fps: Y num: Z"
             vis_frame = plot_tracking(
                 frame, 
                 [] if frame_tracks is None else frame_tracks["tlwhs"], 
@@ -318,15 +274,11 @@ def render_tracking_visualizations(exp, results_folder, vis_output_dir, pipeline
             )
 
             target_count = get_target_count(frame_tracks)
-
-            # This appends your custom branch label right next to the YOLOX text!
             append_branch_telemetry(vis_frame, frame_id, pipeline_fps, target_count, branch_label)
 
-            # Save the frame using vis_frame
             cv2.imwrite(os.path.join(sequence_output_dir, os.path.basename(image_path)), vis_frame)
             total_images += 1
 
-            # Write the frame to the video
             if make_video:
                 if video_writer is None:
                     fourcc_fn = getattr(cv2, "VideoWriter_fourcc", None)
@@ -337,6 +289,7 @@ def render_tracking_visualizations(exp, results_folder, vis_output_dir, pipeline
 
         if video_writer is not None: 
             video_writer.release()
+
 
 @logger.catch
 def main(exp, args, num_gpu):
@@ -373,44 +326,10 @@ def main(exp, args, num_gpu):
     full_network_gflops = getattr(exp, "full_network_gflops", parse_gflops_from_model_info(model_info))
     p3_only_gflops = getattr(exp, "p3_only_gflops", None)
 
-    '''
-    class HeadWrapper(torch.nn.Module):
-        def __init__(self, head):
-            super().__init__()
-            self.head = head
-
-        def forward(self, x):
-            # YOLOXHead attend une liste de features, même s'il n'y en a qu'une
-            return self.head([x]) 
-
-    device = next(model.parameters()).device
-    # Vérifie bien que l'input est 4D (N, C, H, W)
-    dummy_input = torch.randn(1, 3, *exp.test_size).to(device)
-
-    # 2. Définit le chemin "Early Exit" avec le Wrapper
-    # On ajoute le wrapper pour gérer la liste attendue par la head
-    early_path = torch.nn.Sequential(
-        model.backbone.backbone.stem,
-        model.backbone.backbone.dark2,
-        model.backbone.backbone.dark3,
-        HeadWrapper(model.early_head) 
-    )
-    
-    # 3. Profilage sécurisé
-    macs_early, _ = profile(early_path, inputs=(dummy_input,), verbose=False)
-    macs_base, _ = profile(model, inputs=(dummy_input,), verbose=False)
-
-    print(f"--- VRAIES MESURES ---")
-    print(f"Coût réel Early Exit (P3) : {macs_early * 2.0 / 1e9:.2f} GFLOPs")
-    print(f"Coût réel Baseline (Full) : {macs_base * 2.0 / 1e9:.2f} GFLOPs")
-
-    device = torch.device(f"cuda:{rank}")
-    dummy_input = torch.zeros(1, 3, exp.test_size[0], exp.test_size[1]).to(device)
-    '''
-
-    # Création du JSON avant l'évaluation !
     ensure_coco_json_exists(exp.data_dir, exp.val_ann, args.mot20)
     val_loader = exp.get_eval_loader(args.batch_size, is_distributed, args.test)
+    
+    # MOTEvaluator from aerotrack
     evaluator = MOTEvaluator(
         args=args, dataloader=val_loader, img_size=exp.test_size,
         confthre=exp.test_conf, nmsthre=exp.nmsthre, num_classes=exp.num_classes
@@ -446,7 +365,6 @@ def main(exp, args, num_gpu):
     pipeline_latency = (total_time / max(num_frames, 1)) * 1000.0
     pipeline_fps = num_frames / max(total_time, 1e-9)
     
-    # EXTRACTION DE LA VRAIE LATENCE MATERIELLE (Sans écriture disque)
     hardware_latency = None
     match = re.search(r"Average inference time:\s*([0-9]+(?:\.[0-9]+)?)\s*ms", summary_coco)
     if match:
@@ -454,9 +372,6 @@ def main(exp, args, num_gpu):
 
     logger.info("\n" + summary_coco)
 
-    # ---------------------------------------------------------
-    # Gestion optimisée des Early Exits
-    # ---------------------------------------------------------
     if hasattr(evaluator, "last_early_stats"):
         stats = evaluator.last_early_stats
         total_early, total_total = 0, 0
@@ -491,13 +406,9 @@ def main(exp, args, num_gpu):
 
     logger.info(f'Recherche des fichiers GT avec le chemin : {gt_pattern}')
     
-    # Utilisation de parent.parent.name pour mapper proprement (ex: UAVSwarm-02)
     gt = OrderedDict([(Path(f).parent.parent.name, mm.io.loadtxt(f, fmt='mot15-2D', min_confidence=1)) for f in gtfiles])
     ts = OrderedDict([(os.path.splitext(Path(f).name)[0], mm.io.loadtxt(f, fmt='mot15-2D', min_confidence=-1)) for f in tsfiles])    
     
-    # ---------------------------------------------------------
-    # Calcul Propre des Métriques MOT (Incluant IDF1)
-    # ---------------------------------------------------------
     mh = mm.metrics.create()    
     accs, names = compare_dataframes(gt, ts)
     
@@ -513,7 +424,6 @@ def main(exp, args, num_gpu):
         for divided in div_dict[divisor]:
             summary_df[divided] = (summary_df[divided] / summary_df[divisor])
             
-    # Injection des Vraies Latences
     if hardware_latency is not None:
         summary_df.loc['OVERALL', 'HW_Latency_ms'] = round(hardware_latency, 2)
         summary_df.loc['OVERALL', 'HW_FPS'] = round(1000.0 / hardware_latency, 2)
@@ -540,7 +450,6 @@ def main(exp, args, num_gpu):
        )
     logger.info(f"Latency: {hardware_latency:.2f} ms/img | FPS: {1000.0/hardware_latency:.2f}")
     logger.info('Completed')
-
 
 
 if __name__ == "__main__":
