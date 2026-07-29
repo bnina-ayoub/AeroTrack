@@ -7,8 +7,7 @@ from scipy.spatial.distance import cdist
 from cython_bbox import bbox_overlaps as bbox_ious
 from aerotrack.tracker import kalman_filter
 import time
-
-from aerotrack.utils import logger
+from loguru import logger
 
 try:
     from yolox.tracker.cython_nwd import nwd_distance_c

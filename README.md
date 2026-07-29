@@ -50,7 +50,7 @@ pip install cython_bbox
 pip install motmetrics
 
 # Install AeroTrack in development mode (Compiles C++ and Cython NWD extensions)
-pip install -v -e .
+pip install -v -e . --no-build-isolation
 ```
 
 ### 4. Preparing the Weights
