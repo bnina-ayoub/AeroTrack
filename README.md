@@ -16,7 +16,7 @@ https://github.com/user-attachments/assets/ca8e1d86-d2df-4852-928f-89b6337f349b
 
 ## ⚙️ Installation and Setup
 
-To run AeroTrack, you need to set up the Python environment and install YOLOX.
+To run AeroTrack, you need to set up the Python environment and install the customized architecture.
 
 ### 1. Environment Prerequisites
 
@@ -28,7 +28,15 @@ python3 -m venv venv
 source venv/bin/activate
 ```
 
-### 2. Installing Dependencies and YOLOX
+### 2. Fetching Submodules
+
+AeroTrack uses the original ByteTrack repository as a submodule for baseline evaluation. Run the following to fetch it:
+
+```bash
+git submodule update --init --recursive
+```
+
+### 3. Installing Dependencies and AeroTrack
 
 AeroTrack relies on the YOLOX engine. Run the following commands from the project root to install the required dependencies and link the project.
 
@@ -36,16 +44,16 @@ AeroTrack relies on the YOLOX engine. Run the following commands from the projec
 # Install base dependencies
 pip install -r requirements.txt
 
-# Install YOLOX in development mode
-pip install -v -e .
-
 # Install tracking-specific dependencies (MOT)
 pip install cython
 pip install cython_bbox
 pip install motmetrics
+
+# Install AeroTrack in development mode (Compiles C++ and Cython NWD extensions)
+pip install -v -e .
 ```
 
-### 3. Preparing the Weights
+### 4. Preparing the Weights
 
 Make sure to place your trained weights file (`early_exit_weights.pth`) in the `weights/` folder at the project root.
 
@@ -72,7 +80,7 @@ chmod +x run_evaluations.sh
 Under the hood, the script runs the following command for each mode:
 
 ```bash
-python tools/track.py --fp16 --fuse -d 1 -b 1 -f exps/aerotrack_proposed.py -c weights/early_exit_weights.pth --distance <metric> [--early_exit] --save_vis
+python3 tools/track.py --fp16 --fuse -d 1 -b 1 -f exps/aerotrack_proposed.py -c weights/early_exit_weights.pth --distance <metric> [--early_exit] --save_vis
 ```
 
 ### Results Analysis
@@ -90,4 +98,5 @@ For each experiment, AeroTrack will generate a dedicated results folder containi
 - **`tools/track.py`**: Main script for launching inference and MOT tracking.
 - **`exps/aerotrack_proposed.py`**: Definition file for our unified architecture.
 - **`run_evaluations.sh`**: Bash script for automating comparative evaluations.
-- **`yolox/`**: Model source code containing the `DecisionGate` and `EarlyHead` logic.
+- **`aerotrack/`**: Model source code containing the `DecisionGate` and `EarlyHead` logic, alongside custom NWD distance implementations.
+- **`third_party/ByteTrack/`**: The pristine, original ByteTrack repository included as a submodule for baseline reference and evaluation.
