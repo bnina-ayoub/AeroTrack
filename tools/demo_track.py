@@ -9,6 +9,7 @@ from loguru import logger
 from aerotrack.data.data_augment import preproc
 from aerotrack.exp import get_exp
 from aerotrack.utils import fuse_model, get_model_info, postprocess
+from aerotrack.evaluators.mot_evaluator import summarize_frame_latency_records
 from aerotrack.utils.visualize import plot_tracking
 from aerotrack.tracker.byte_tracker import BYTETracker
 from aerotrack.tracking_utils.timer import Timer
@@ -108,7 +109,9 @@ def execute_video_stream(inference_engine, output_directory, execution_arguments
     video_writer = None
     if execution_arguments.save_result:
         save_path = os.path.join(save_folder, os.path.basename(execution_arguments.path) if execution_arguments.demo == "video" else "camera.mp4")
-        video_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*"mp4v"), video_fps, (int(video_width), int(video_height)))
+        fourcc_fn = getattr(cv2, "VideoWriter_fourcc", None)
+        if fourcc_fn is not None:
+            video_writer = cv2.VideoWriter(save_path, fourcc_fn(*"mp4v"), video_fps, (int(video_width), int(video_height)))
         
     # --- AJOUT : Utilisation dynamique de la distance demandée dans le terminal ---
     tracking_engine = BYTETracker(execution_arguments, frame_rate=30, distance_metric=execution_arguments.distance)
@@ -116,12 +119,16 @@ def execute_video_stream(inference_engine, output_directory, execution_arguments
     
     current_frame_index = 0
     tracking_results = []
+    frame_latency_records = []
     early_exit_count = 0
+    warmup_frames = 20
     
     while True:
         frame_retrieved, raw_frame = video_capture.read()
         if not frame_retrieved:
             break
+
+        frame_start = time.perf_counter()
             
         detections, metadata = inference_engine.process_frame(raw_frame, performance_timer)
         
@@ -142,9 +149,27 @@ def execute_video_stream(inference_engine, output_directory, execution_arguments
                     tracking_results.append(f"{current_frame_index},{track.track_id},{track.tlwh[0]:.2f},{track.tlwh[1]:.2f},{track.tlwh[2]:.2f},{track.tlwh[3]:.2f},{track.score:.2f},-1,-1,-1\n")
                     
             performance_timer.toc()
+            frame_end = time.perf_counter()
+            frame_latency_ms = (frame_end - frame_start) * 1000.0
+            if current_frame_index + 1 > warmup_frames:
+                frame_latency_records.append({
+                    "sequence": os.path.basename(execution_arguments.path) if execution_arguments.demo == "video" else "camera",
+                    "frame_id": current_frame_index + 1,
+                    "latency_ms": frame_latency_ms,
+                    "fps": 1000.0 / max(frame_latency_ms, 1e-9),
+                })
             annotated_frame = plot_tracking(metadata['raw_frame'], valid_tlwhs, valid_ids, frame_id=current_frame_index + 1, fps=1.0 / max(1e-5, performance_timer.average_time))
         else:
             performance_timer.toc()
+            frame_end = time.perf_counter()
+            frame_latency_ms = (frame_end - frame_start) * 1000.0
+            if current_frame_index + 1 > warmup_frames:
+                frame_latency_records.append({
+                    "sequence": os.path.basename(execution_arguments.path) if execution_arguments.demo == "video" else "camera",
+                    "frame_id": current_frame_index + 1,
+                    "latency_ms": frame_latency_ms,
+                    "fps": 1000.0 / max(frame_latency_ms, 1e-9),
+                })
             annotated_frame = metadata['raw_frame']
 
         if early_exit_triggered is not None:
@@ -152,7 +177,7 @@ def execute_video_stream(inference_engine, output_directory, execution_arguments
             status_color = (0, 165, 255) if early_exit_triggered else (0, 255, 0)
             cv2.putText(annotated_frame, f'[{status_label}]', (10, 75), cv2.FONT_HERSHEY_PLAIN, 2, status_color, thickness=2)
             
-        if execution_arguments.save_result:
+        if execution_arguments.save_result and video_writer is not None:
             video_writer.write(annotated_frame)
             
         cv2.imshow("AeroTrack Real-Time Multi-Target Stream", annotated_frame)
@@ -170,6 +195,27 @@ def execute_video_stream(inference_engine, output_directory, execution_arguments
         effective_gflops, gflops_reduction, exit_rate = calculate_effective_computation(early_exit_count, current_frame_index, base_gflops)
         if effective_gflops is not None:
             logger.info(f"Early Exits: {early_exit_count}/{current_frame_index} ({exit_rate:.1%}) | Effective GFLOPs: {effective_gflops:.2f} | GFLOPs Reduction: {gflops_reduction:.2f}%")
+
+    frame_latency_summary = summarize_frame_latency_records(frame_latency_records)
+    if frame_latency_summary is not None:
+        best_frame = frame_latency_summary["best"]
+        worst_frame = frame_latency_summary["worst"]
+        logger.info(
+            "Frame latency extremes | best: {} frame {} ({:.2f} ms, {:.2f} FPS) | worst: {} frame {} ({:.2f} ms, {:.2f} FPS)".format(
+                best_frame["sequence"], best_frame["frame_id"], best_frame["latency_ms"], best_frame["fps"],
+                worst_frame["sequence"], worst_frame["frame_id"], worst_frame["latency_ms"], worst_frame["fps"],
+            )
+        )
+
+        performance_summary_path = os.path.join(output_directory, f"{timestamp}_performance_summary.csv")
+        with open(performance_summary_path, "w") as summary_file:
+            summary_file.write("metric,sequence,frame_id,latency_ms,fps\n")
+            summary_file.write(
+                f"best,{best_frame['sequence']},{best_frame['frame_id']},{best_frame['latency_ms']:.2f},{best_frame['fps']:.2f}\n"
+            )
+            summary_file.write(
+                f"worst,{worst_frame['sequence']},{worst_frame['frame_id']},{worst_frame['latency_ms']:.2f},{worst_frame['fps']:.2f}\n"
+            )
 
 def main():
     parsed_arguments = build_demo_parser().parse_args()

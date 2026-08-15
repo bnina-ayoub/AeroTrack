@@ -51,6 +51,20 @@ def write_results_no_score(filename, results):
     logger.info('save results to {}'.format(filename))
 
 
+def summarize_frame_latency_records(frame_latency_records):
+    if not frame_latency_records:
+        return None
+
+    best_record = min(frame_latency_records, key=lambda record: record['latency_ms'])
+    worst_record = max(frame_latency_records, key=lambda record: record['latency_ms'])
+
+    return {
+        'count': len(frame_latency_records),
+        'best': best_record,
+        'worst': worst_record,
+    }
+
+
 class MOTEvaluator:
     """
     COCO AP Evaluation class.  All the data in the val2017 dataset are processed
@@ -112,6 +126,8 @@ class MOTEvaluator:
 
         inference_time = 0
         track_time = 0
+        frame_latency_records = []
+        warmup_frames = 20
         n_samples = len(self.dataloader) - 1
 
         if trt_file is not None:
@@ -185,6 +201,16 @@ class MOTEvaluator:
                 if is_time_record:
                     track_end = time_synchronized()
                     track_time += track_end - track_start
+
+                if is_time_record and frame_id > warmup_frames:
+                    frame_end = track_end if outputs[0] is not None else infer_end
+                    frame_latency_ms = (frame_end - start) * 1000.0
+                    frame_latency_records.append({
+                        'sequence': video_name,
+                        'frame_id': frame_id,
+                        'latency_ms': frame_latency_ms,
+                        'fps': 1000.0 / max(frame_latency_ms, 1e-9),
+                    })
                     
                 online_tlwhs = []
                 online_ids = []
@@ -226,9 +252,13 @@ class MOTEvaluator:
         if distributed:
             data_list = gather(data_list, dst=0)
             data_list = list(itertools.chain(*data_list))
+            frame_latency_records = gather(frame_latency_records, dst=0)
+            frame_latency_records = list(itertools.chain(*frame_latency_records))
             torch.distributed.reduce(statistics, dst=0)
 
         eval_results = self.evaluate_prediction(data_list, statistics)
+        self.last_frame_latency_records = frame_latency_records
+        self.last_frame_latency_summary = summarize_frame_latency_records(frame_latency_records)
         # store early-exit stats and calculate FLOPS reduction
         self.last_early_stats = early_stats
         total_early = sum(s["early"] for s in early_stats.values())

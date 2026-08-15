@@ -37,6 +37,7 @@ from aerotrack.core import launch
 from aerotrack.exp import get_exp
 from aerotrack.utils import configure_nccl, fuse_model, get_local_rank, get_model_info, setup_logger
 from aerotrack.evaluators import MOTEvaluator
+from aerotrack.evaluators.mot_evaluator import summarize_frame_latency_records
 from aerotrack.utils.visualize import plot_tracking
 
 
@@ -396,6 +397,17 @@ def main(exp, args, num_gpu):
             else:
                 logger.info(f"early exits {total_early}/{total_total} ({total_early/total_total:.1%})")
 
+    frame_latency_summary = summarize_frame_latency_records(getattr(evaluator, "last_frame_latency_records", []))
+    if frame_latency_summary is not None:
+        best_frame = frame_latency_summary["best"]
+        worst_frame = frame_latency_summary["worst"]
+        logger.info(
+            "Frame latency extremes | best: {} frame {} ({:.2f} ms, {:.2f} FPS) | worst: {} frame {} ({:.2f} ms, {:.2f} FPS)".format(
+                best_frame["sequence"], best_frame["frame_id"], best_frame["latency_ms"], best_frame["fps"],
+                worst_frame["sequence"], worst_frame["frame_id"], worst_frame["latency_ms"], worst_frame["fps"],
+            )
+        )
+
     mm.lap.default_solver = 'lap'
     gt_type = '_val_half' if exp.val_ann == 'val_half.json' else ''
     
@@ -427,6 +439,16 @@ def main(exp, args, num_gpu):
     if hardware_latency is not None:
         summary_df.loc['OVERALL', 'HW_Latency_ms'] = round(hardware_latency, 2)
         summary_df.loc['OVERALL', 'HW_FPS'] = round(1000.0 / hardware_latency, 2)
+
+    if frame_latency_summary is not None:
+        summary_df.loc['OVERALL', 'Best_Frame_Sequence'] = best_frame["sequence"]
+        summary_df.loc['OVERALL', 'Best_Frame_Id'] = int(best_frame["frame_id"])
+        summary_df.loc['OVERALL', 'Best_Frame_Latency_ms'] = round(best_frame["latency_ms"], 2)
+        summary_df.loc['OVERALL', 'Best_Frame_FPS'] = round(best_frame["fps"], 2)
+        summary_df.loc['OVERALL', 'Worst_Frame_Sequence'] = worst_frame["sequence"]
+        summary_df.loc['OVERALL', 'Worst_Frame_Id'] = int(worst_frame["frame_id"])
+        summary_df.loc['OVERALL', 'Worst_Frame_Latency_ms'] = round(worst_frame["latency_ms"], 2)
+        summary_df.loc['OVERALL', 'Worst_Frame_FPS'] = round(worst_frame["fps"], 2)
         
     summary_df.loc['OVERALL', 'Pipeline_Latency_ms'] = round(pipeline_latency, 2)
     

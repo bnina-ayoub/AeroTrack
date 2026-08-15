@@ -10,7 +10,7 @@ import time
 from loguru import logger
 
 try:
-    from yolox.tracker.cython_nwd import nwd_distance_c
+    from aerotrack.tracker.cython_nwd import nwd_distance_c
 except ImportError as e:
     logger.warning(f"Cython NWD non trouvé ({e}). Utilisation de NumPy (plus lent).")
     nwd_distance_c = None
