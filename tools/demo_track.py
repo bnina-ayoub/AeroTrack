@@ -9,6 +9,7 @@ from loguru import logger
 from aerotrack.data.data_augment import preproc
 from aerotrack.exp import get_exp
 from aerotrack.utils import fuse_model, get_model_info, postprocess
+from aerotrack.utils.energy import EnergyMonitor
 from aerotrack.evaluators.mot_evaluator import summarize_frame_latency_records
 from aerotrack.utils.visualize import plot_tracking
 from aerotrack.tracker.byte_tracker import BYTETracker
@@ -101,120 +102,176 @@ def execute_video_stream(inference_engine, output_directory, execution_arguments
     video_width = video_capture.get(cv2.CAP_PROP_FRAME_WIDTH)
     video_height = video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT)
     video_fps = video_capture.get(cv2.CAP_PROP_FPS)
-    
+
     timestamp = time.strftime("%Y_%m_%d_%H_%M_%S", time.localtime())
     save_folder = os.path.join(output_directory, timestamp)
     os.makedirs(save_folder, exist_ok=True)
-    
+
     video_writer = None
     if execution_arguments.save_result:
-        save_path = os.path.join(save_folder, os.path.basename(execution_arguments.path) if execution_arguments.demo == "video" else "camera.mp4")
+        save_path = os.path.join(
+            save_folder,
+            os.path.basename(execution_arguments.path) if execution_arguments.demo == "video" else "camera.mp4",
+        )
         fourcc_fn = getattr(cv2, "VideoWriter_fourcc", None)
         if fourcc_fn is not None:
             video_writer = cv2.VideoWriter(save_path, fourcc_fn(*"mp4v"), video_fps, (int(video_width), int(video_height)))
-        
-    # --- AJOUT : Utilisation dynamique de la distance demandée dans le terminal ---
+
     tracking_engine = BYTETracker(execution_arguments, frame_rate=30, distance_metric=execution_arguments.distance)
     performance_timer = Timer()
-    
+
     current_frame_index = 0
     tracking_results = []
     frame_latency_records = []
     early_exit_count = 0
     warmup_frames = 20
-    
-    while True:
-        frame_retrieved, raw_frame = video_capture.read()
-        if not frame_retrieved:
-            break
+    energy_monitor = EnergyMonitor(sample_interval_s=0.5)
+    energy_monitor.start()
+    energy_summary = None
 
-        frame_start = time.perf_counter()
-            
-        detections, metadata = inference_engine.process_frame(raw_frame, performance_timer)
-        
-        early_exit_triggered = metadata.get("early_exit_triggered")
-        if early_exit_triggered is True:
-            early_exit_count += 1
-            
-        if detections[0] is not None:
-            active_tracks = tracking_engine.update(detections[0], [metadata['raw_height'], metadata['raw_width']], inference_engine.target_input_dimensions)
-            valid_tlwhs = []
-            valid_ids = []
-            
-            for track in active_tracks:
-                vertical_ratio_violation = (track.tlwh[2] / track.tlwh[3]) > execution_arguments.aspect_ratio_thresh
-                if (track.tlwh[2] * track.tlwh[3] > execution_arguments.min_box_area) and not vertical_ratio_violation:
-                    valid_tlwhs.append(track.tlwh)
-                    valid_ids.append(track.track_id)
-                    tracking_results.append(f"{current_frame_index},{track.track_id},{track.tlwh[0]:.2f},{track.tlwh[1]:.2f},{track.tlwh[2]:.2f},{track.tlwh[3]:.2f},{track.score:.2f},-1,-1,-1\n")
-                    
-            performance_timer.toc()
-            frame_end = time.perf_counter()
-            frame_latency_ms = (frame_end - frame_start) * 1000.0
-            if current_frame_index + 1 > warmup_frames:
-                frame_latency_records.append({
-                    "sequence": os.path.basename(execution_arguments.path) if execution_arguments.demo == "video" else "camera",
-                    "frame_id": current_frame_index + 1,
-                    "latency_ms": frame_latency_ms,
-                    "fps": 1000.0 / max(frame_latency_ms, 1e-9),
-                })
-            annotated_frame = plot_tracking(metadata['raw_frame'], valid_tlwhs, valid_ids, frame_id=current_frame_index + 1, fps=1.0 / max(1e-5, performance_timer.average_time))
-        else:
-            performance_timer.toc()
-            frame_end = time.perf_counter()
-            frame_latency_ms = (frame_end - frame_start) * 1000.0
-            if current_frame_index + 1 > warmup_frames:
-                frame_latency_records.append({
-                    "sequence": os.path.basename(execution_arguments.path) if execution_arguments.demo == "video" else "camera",
-                    "frame_id": current_frame_index + 1,
-                    "latency_ms": frame_latency_ms,
-                    "fps": 1000.0 / max(frame_latency_ms, 1e-9),
-                })
-            annotated_frame = metadata['raw_frame']
+    try:
+        while True:
+            frame_retrieved, raw_frame = video_capture.read()
+            if not frame_retrieved:
+                break
 
-        if early_exit_triggered is not None:
-            status_label = 'EE' if early_exit_triggered else 'Full'
-            status_color = (0, 165, 255) if early_exit_triggered else (0, 255, 0)
-            cv2.putText(annotated_frame, f'[{status_label}]', (10, 75), cv2.FONT_HERSHEY_PLAIN, 2, status_color, thickness=2)
-            
-        if execution_arguments.save_result and video_writer is not None:
-            video_writer.write(annotated_frame)
-            
-        cv2.imshow("AeroTrack Real-Time Multi-Target Stream", annotated_frame)
-        if cv2.waitKey(1) & 0xFF == 27:
-            break
-            
-        current_frame_index += 1
-        
+            frame_start = time.perf_counter()
+            detections, metadata = inference_engine.process_frame(raw_frame, performance_timer)
+
+            early_exit_triggered = metadata.get("early_exit_triggered")
+            if early_exit_triggered is True:
+                early_exit_count += 1
+
+            if detections[0] is not None:
+                active_tracks = tracking_engine.update(
+                    detections[0],
+                    [metadata["raw_height"], metadata["raw_width"]],
+                    inference_engine.target_input_dimensions,
+                )
+                valid_tlwhs = []
+                valid_ids = []
+
+                for track in active_tracks:
+                    vertical_ratio_violation = (track.tlwh[2] / track.tlwh[3]) > execution_arguments.aspect_ratio_thresh
+                    if (track.tlwh[2] * track.tlwh[3] > execution_arguments.min_box_area) and not vertical_ratio_violation:
+                        valid_tlwhs.append(track.tlwh)
+                        valid_ids.append(track.track_id)
+                        tracking_results.append(
+                            f"{current_frame_index},{track.track_id},{track.tlwh[0]:.2f},{track.tlwh[1]:.2f},{track.tlwh[2]:.2f},{track.tlwh[3]:.2f},{track.score:.2f},-1,-1,-1\n"
+                        )
+
+                performance_timer.toc()
+                frame_end = time.perf_counter()
+                frame_latency_ms = (frame_end - frame_start) * 1000.0
+                if current_frame_index + 1 > warmup_frames:
+                    frame_latency_records.append(
+                        {
+                            "sequence": os.path.basename(execution_arguments.path) if execution_arguments.demo == "video" else "camera",
+                            "frame_id": current_frame_index + 1,
+                            "latency_ms": frame_latency_ms,
+                            "fps": 1000.0 / max(frame_latency_ms, 1e-9),
+                        }
+                    )
+                annotated_frame = plot_tracking(
+                    metadata["raw_frame"],
+                    valid_tlwhs,
+                    valid_ids,
+                    frame_id=current_frame_index + 1,
+                    fps=1.0 / max(1e-5, performance_timer.average_time),
+                )
+            else:
+                performance_timer.toc()
+                frame_end = time.perf_counter()
+                frame_latency_ms = (frame_end - frame_start) * 1000.0
+                if current_frame_index + 1 > warmup_frames:
+                    frame_latency_records.append(
+                        {
+                            "sequence": os.path.basename(execution_arguments.path) if execution_arguments.demo == "video" else "camera",
+                            "frame_id": current_frame_index + 1,
+                            "latency_ms": frame_latency_ms,
+                            "fps": 1000.0 / max(frame_latency_ms, 1e-9),
+                        }
+                    )
+                annotated_frame = metadata["raw_frame"]
+
+            if early_exit_triggered is not None:
+                status_label = "EE" if early_exit_triggered else "Full"
+                status_color = (0, 165, 255) if early_exit_triggered else (0, 255, 0)
+                cv2.putText(annotated_frame, f"[{status_label}]", (10, 75), cv2.FONT_HERSHEY_PLAIN, 2, status_color, thickness=2)
+
+            if execution_arguments.save_result and video_writer is not None:
+                video_writer.write(annotated_frame)
+
+            cv2.imshow("AeroTrack Real-Time Multi-Target Stream", annotated_frame)
+            if cv2.waitKey(1) & 0xFF == 27:
+                break
+
+            current_frame_index += 1
+    finally:
+        energy_summary = energy_monitor.stop()
+        video_capture.release()
+        if video_writer is not None:
+            video_writer.release()
+
     if execution_arguments.save_result:
         results_file_path = os.path.join(output_directory, f"{timestamp}.txt")
-        with open(results_file_path, 'w') as output_file:
+        with open(results_file_path, "w") as output_file:
             output_file.writelines(tracking_results)
 
     if current_frame_index > 0 and early_exit_count > 0:
-        effective_gflops, gflops_reduction, exit_rate = calculate_effective_computation(early_exit_count, current_frame_index, base_gflops)
+        effective_gflops, gflops_reduction, exit_rate = calculate_effective_computation(
+            early_exit_count,
+            current_frame_index,
+            base_gflops,
+        )
         if effective_gflops is not None:
-            logger.info(f"Early Exits: {early_exit_count}/{current_frame_index} ({exit_rate:.1%}) | Effective GFLOPs: {effective_gflops:.2f} | GFLOPs Reduction: {gflops_reduction:.2f}%")
+            logger.info(
+                f"Early Exits: {early_exit_count}/{current_frame_index} ({exit_rate:.1%}) | Effective GFLOPs: {effective_gflops:.2f} | GFLOPs Reduction: {gflops_reduction:.2f}%"
+            )
 
     frame_latency_summary = summarize_frame_latency_records(frame_latency_records)
+    best_frame = None
+    worst_frame = None
     if frame_latency_summary is not None:
         best_frame = frame_latency_summary["best"]
         worst_frame = frame_latency_summary["worst"]
         logger.info(
             "Frame latency extremes | best: {} frame {} ({:.2f} ms, {:.2f} FPS) | worst: {} frame {} ({:.2f} ms, {:.2f} FPS)".format(
-                best_frame["sequence"], best_frame["frame_id"], best_frame["latency_ms"], best_frame["fps"],
-                worst_frame["sequence"], worst_frame["frame_id"], worst_frame["latency_ms"], worst_frame["fps"],
+                best_frame["sequence"],
+                best_frame["frame_id"],
+                best_frame["latency_ms"],
+                best_frame["fps"],
+                worst_frame["sequence"],
+                worst_frame["frame_id"],
+                worst_frame["latency_ms"],
+                worst_frame["fps"],
             )
         )
 
-        performance_summary_path = os.path.join(output_directory, f"{timestamp}_performance_summary.csv")
-        with open(performance_summary_path, "w") as summary_file:
-            summary_file.write("metric,sequence,frame_id,latency_ms,fps\n")
+    if energy_summary is not None:
+        logger.info(
+            "Energy usage | backend: {} | energy: {:.2f} J | avg power: {:.2f} W | peak power: {:.2f} W | samples: {}".format(
+                energy_summary.backend,
+                energy_summary.energy_j,
+                energy_summary.average_power_w,
+                energy_summary.peak_power_w,
+                energy_summary.sample_count,
+            )
+        )
+
+    performance_summary_path = os.path.join(output_directory, f"{timestamp}_performance_summary.csv")
+    with open(performance_summary_path, "w") as summary_file:
+        summary_file.write("metric,sequence,frame_id,latency_ms,fps,energy_j,avg_power_w,peak_power_w,backend\n")
+        if best_frame is not None and worst_frame is not None:
             summary_file.write(
-                f"best,{best_frame['sequence']},{best_frame['frame_id']},{best_frame['latency_ms']:.2f},{best_frame['fps']:.2f}\n"
+                f"best,{best_frame['sequence']},{best_frame['frame_id']},{best_frame['latency_ms']:.2f},{best_frame['fps']:.2f},,,,,\n"
             )
             summary_file.write(
-                f"worst,{worst_frame['sequence']},{worst_frame['frame_id']},{worst_frame['latency_ms']:.2f},{worst_frame['fps']:.2f}\n"
+                f"worst,{worst_frame['sequence']},{worst_frame['frame_id']},{worst_frame['latency_ms']:.2f},{worst_frame['fps']:.2f},,,,,\n"
+            )
+        if energy_summary is not None:
+            summary_file.write(
+                f"energy,,,,,{energy_summary.energy_j:.2f},{energy_summary.average_power_w:.2f},{energy_summary.peak_power_w:.2f},{energy_summary.backend}\n"
             )
 
 def main():

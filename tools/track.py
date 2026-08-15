@@ -36,6 +36,7 @@ if os.path.exists(BYTETRACK_SUBMODULE) and BYTETRACK_SUBMODULE not in sys.path:
 from aerotrack.core import launch
 from aerotrack.exp import get_exp
 from aerotrack.utils import configure_nccl, fuse_model, get_local_rank, get_model_info, setup_logger
+from aerotrack.utils.energy import EnergyMonitor
 from aerotrack.evaluators import MOTEvaluator
 from aerotrack.evaluators.mot_evaluator import summarize_frame_latency_records
 from aerotrack.utils.visualize import plot_tracking
@@ -357,8 +358,14 @@ def main(exp, args, num_gpu):
         trt_file, decoder = None, None
 
     logger.info("⏱️ Starting performance timer...")
+    energy_monitor = EnergyMonitor(sample_interval_s=0.5) if rank == 0 else None
+    if energy_monitor is not None:
+        energy_monitor.start()
     t0 = time()
-    *_, summary_coco = evaluator.evaluate(model, is_distributed, args.fp16, trt_file, decoder, exp.test_size, results_folder)
+    try:
+        *_, summary_coco = evaluator.evaluate(model, is_distributed, args.fp16, trt_file, decoder, exp.test_size, results_folder)
+    finally:
+        energy_summary = energy_monitor.stop() if energy_monitor is not None else None
     t1 = time()
     
     total_time = t1 - t0
@@ -408,6 +415,17 @@ def main(exp, args, num_gpu):
             )
         )
 
+    if energy_summary is not None:
+        logger.info(
+            "Energy usage | backend: {} | energy: {:.2f} J | avg power: {:.2f} W | peak power: {:.2f} W | samples: {}".format(
+                energy_summary.backend,
+                energy_summary.energy_j,
+                energy_summary.average_power_w,
+                energy_summary.peak_power_w,
+                energy_summary.sample_count,
+            )
+        )
+
     mm.lap.default_solver = 'lap'
     gt_type = '_val_half' if exp.val_ann == 'val_half.json' else ''
     
@@ -449,6 +467,13 @@ def main(exp, args, num_gpu):
         summary_df.loc['OVERALL', 'Worst_Frame_Id'] = int(worst_frame["frame_id"])
         summary_df.loc['OVERALL', 'Worst_Frame_Latency_ms'] = round(worst_frame["latency_ms"], 2)
         summary_df.loc['OVERALL', 'Worst_Frame_FPS'] = round(worst_frame["fps"], 2)
+
+    if energy_summary is not None:
+        summary_df.loc['OVERALL', 'Energy_J'] = round(energy_summary.energy_j, 2)
+        summary_df.loc['OVERALL', 'Avg_Power_W'] = round(energy_summary.average_power_w, 2)
+        summary_df.loc['OVERALL', 'Peak_Power_W'] = round(energy_summary.peak_power_w, 2)
+        summary_df.loc['OVERALL', 'Energy_Backend'] = energy_summary.backend
+        summary_df.loc['OVERALL', 'Energy_Samples'] = int(energy_summary.sample_count)
         
     summary_df.loc['OVERALL', 'Pipeline_Latency_ms'] = round(pipeline_latency, 2)
     
