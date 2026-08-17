@@ -4,6 +4,7 @@
 
 import torch
 import torch.nn as nn
+import inspect
 from timm.models.swin_transformer import SwinTransformerBlock as TimmSwinTransformerBlock
 
 class SiLU(nn.Module):
@@ -296,30 +297,51 @@ class SwinTokenStage(nn.Module):
     ):
         super().__init__()
         H, W = input_resolution
+
+        # Jetson often ships older timm versions that require window_size to divide H and W.
+        resolved_window_size = min(window_size, H, W)
+        if (H % resolved_window_size) != 0 or (W % resolved_window_size) != 0:
+            for candidate in range(resolved_window_size, 0, -1):
+                if (H % candidate) == 0 and (W % candidate) == 0:
+                    resolved_window_size = candidate
+                    break
+
+        self.input_resolution = (H, W)
+        self.expects_3d_tokens = False
         blocks = []
+        signature = inspect.signature(TimmSwinTransformerBlock)
+        param_names = set(signature.parameters.keys())
+        self.expects_3d_tokens = "dynamic_mask" not in param_names
         for i in range(depth):
-            shift = 0 if (i % 2 == 0) else window_size // 2
-            blocks.append(
-                TimmSwinTransformerBlock(
-                    dim=dim,
-                    input_resolution=(H, W),
-                    num_heads=num_heads,
-                    window_size=window_size,
-                    shift_size=shift,
-                    mlp_ratio=mlp_ratio,
-                    drop_path=drop_path,
-                    qkv_bias=True,
-                    dynamic_mask=True,
-                )
-            )
+            shift = 0 if (i % 2 == 0) else resolved_window_size // 2
+            block_kwargs = {
+                "dim": dim,
+                "input_resolution": (H, W),
+                "num_heads": num_heads,
+                "window_size": resolved_window_size,
+                "shift_size": shift,
+                "mlp_ratio": mlp_ratio,
+                "drop_path": drop_path,
+                "qkv_bias": True,
+            }
+            if "dynamic_mask" in param_names:
+                block_kwargs["dynamic_mask"] = True
+
+            blocks.append(TimmSwinTransformerBlock(**block_kwargs))
         self.blocks = nn.Sequential(*blocks)
 
     def forward(self, x):
+        bsz, channels, height, width = x.shape
+        if self.expects_3d_tokens:
+            # Legacy timm Swin blocks expect [B, H*W, C].
+            tokens = x.flatten(2).transpose(1, 2).contiguous()
+            tokens = self.blocks(tokens)
+            return tokens.transpose(1, 2).reshape(bsz, channels, height, width).contiguous()
+
+        # Newer timm Swin blocks consume [B, H, W, C].
         x = x.permute(0, 2, 3, 1).contiguous()
         x = self.blocks(x)
-        # back to [B, C, H, W]
-        x = x.permute(0, 3, 1, 2).contiguous()
-        return x
+        return x.permute(0, 3, 1, 2).contiguous()
     
 
 class EarlyExitDecisionModule(nn.Module):

@@ -42,11 +42,18 @@ from aerotrack.evaluators.mot_evaluator import summarize_frame_latency_records
 from aerotrack.utils.visualize import plot_tracking
 
 
+def _default_dist_backend():
+    machine = os.uname().machine.lower()
+    if any(token in machine for token in ("aarch64", "arm64", "armv8")):
+        return "gloo"
+    return "nccl"
+
+
 def make_parser():
     parser = argparse.ArgumentParser("AeroTrack Evaluation & Tracking")
     parser.add_argument("-expn", "--experiment-name", type=str, default=None)
     parser.add_argument("-n", "--name", type=str, default=None, help="model name")
-    parser.add_argument("--dist-backend", default="nccl", type=str, help="distributed backend")
+    parser.add_argument("--dist-backend", default=_default_dist_backend(), type=str, help="distributed backend")
     parser.add_argument("--dist-url", default=None, type=str, help="url used to set up distributed training")
     parser.add_argument("-b", "--batch-size", type=int, default=64, help="batch size")
     parser.add_argument("-d", "--devices", default=None, type=int, help="device for training")

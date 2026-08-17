@@ -7,8 +7,16 @@ from aerotrack.core import Trainer, launch
 from aerotrack.exp import get_exp
 
 import argparse
+import os
 import random
 import warnings
+
+
+def _default_dist_backend():
+    machine = os.uname().machine.lower()
+    if any(token in machine for token in ("aarch64", "arm64", "armv8")):
+        return "gloo"
+    return "nccl"
 
 
 def make_parser():
@@ -18,7 +26,7 @@ def make_parser():
 
     # distributed
     parser.add_argument(
-        "--dist-backend", default="nccl", type=str, help="distributed backend"
+        "--dist-backend", default=_default_dist_backend(), type=str, help="distributed backend"
     )
     parser.add_argument(
         "--dist-url",
