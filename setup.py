@@ -66,7 +66,7 @@ ext_modules = get_extensions()
 
 build_ext_mode = os.environ.get("AEROTRACK_BUILD_EXT", "auto").lower()
 is_arm_platform = any(token in os.uname().machine.lower() for token in ("aarch64", "arm64", "armv8"))
-disable_native_extensions = False
+disable_native_extensions = build_ext_mode in {"0", "false", "no", "off"} or (build_ext_mode == "auto" and is_arm_platform)
 
 if disable_native_extensions:
     ext_modules = []
