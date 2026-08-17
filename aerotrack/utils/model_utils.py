@@ -17,15 +17,27 @@ __all__ = [
 
 
 def get_model_info(model, tsize):
+    try:
+        from copy import deepcopy
+        from thop import profile
+        import torch
 
-    stride = 64
-    img = torch.zeros((1, 3, stride, stride), device=next(model.parameters()).device)
-    flops, params = profile(deepcopy(model), inputs=(img,), verbose=False)
-    params /= 1e6
-    flops /= 1e9
-    flops *= tsize[0] * tsize[1] / stride / stride * 2  # Gflops
-    info = "Params: {:.2f}M, Gflops: {:.2f}".format(params, flops)
-    return info
+        # Use the actual test size (e.g. 640x640) instead of the tiny stride (64x64)
+        if isinstance(tsize, int):
+            h, w = tsize, tsize
+        else:
+            h, w = tsize[0], tsize[1]
+
+        device = next(model.parameters()).device
+        img = torch.zeros((1, 3, h, w), device=device)
+        
+        flops, params = profile(deepcopy(model), inputs=(img,), verbose=False)
+        params_str = f"Params: {params / 1e6:.2f}M"
+        flops_str = f"FLOPs: {flops / 1e9:.2f}G"
+        return f"{params_str}, {flops_str}"
+    except Exception as e:
+        # Gracefully bypass profiling if dynamic shapes are incompatible
+        return "Model profiling skipped"
 
 
 def fuse_conv_and_bn(conv, bn):
