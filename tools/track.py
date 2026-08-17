@@ -17,7 +17,8 @@ import torch
 import torch.backends.cudnn as cudnn
 from torch.nn.parallel import DistributedDataParallel as DDP
 from loguru import logger
-
+import math
+from torch.nn import functional as F
 # -----------------------------------------------------------------------------
 # 1. Environment & Path Configuration
 # -----------------------------------------------------------------------------
@@ -351,7 +352,30 @@ def main(exp, args, num_gpu):
     if not args.speed and not args.trt:
         ckpt_file = os.path.join(file_name, "best_ckpt.pth.tar") if args.ckpt is None else args.ckpt
         logger.info("loading checkpoint")
-        model.load_state_dict(torch.load(ckpt_file, map_location=f"cuda:{rank}")["model_state_dict"], strict=False)
+        ckpt = torch.load(ckpt_file, map_location=f"cuda:{rank}")
+        state_dict = ckpt["model_state_dict"]
+        model_state = model.state_dict()
+
+        for k in list(state_dict.keys()):
+            if 'relative_position_bias_table' in k and k in model_state:
+                ckpt_shape = state_dict[k].shape
+                model_shape = model_state[k].shape
+                
+                if ckpt_shape != model_shape:
+                    num_heads = ckpt_shape[1]
+                    S_ckpt = int(math.sqrt(ckpt_shape[0]))   # e.g., 13 (from 169)
+                    S_model = int(math.sqrt(model_shape[0])) # e.g., 9 (from 81)
+                    
+                    # Reshape checkpoint to [1, Heads, H, W] for interpolation
+                    table = state_dict[k].view(S_ckpt, S_ckpt, num_heads).permute(2, 0, 1).unsqueeze(0)
+                    
+                    # Interpolate down to the model's actual grid size
+                    table = F.interpolate(table, size=(S_model, S_model), mode='bicubic', align_corners=False)
+                    
+                    # Reshape back to [H*W, Heads] and update the dictionary
+                    state_dict[k] = table.squeeze(0).permute(1, 2, 0).view(-1, num_heads)
+
+        model.load_state_dict(state_dict, strict=False)
         logger.info("loaded checkpoint done.")
 
     if is_distributed: model = DDP(model, device_ids=[rank])
