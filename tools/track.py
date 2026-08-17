@@ -13,9 +13,12 @@ from time import time
 from pathlib import Path
 from collections import OrderedDict, defaultdict
 from thop import profile
+import ctypes
 import torch
 import torch.backends.cudnn as cudnn
 from torch.nn.parallel import DistributedDataParallel as DDP
+# Force load torch shared libraries globally to resolve torchvision C++ symbols
+ctypes.CDLL(torch._C.__file__, mode=ctypes.RTLD_GLOBAL)
 from loguru import logger
 import math
 from torch.nn import functional as F
