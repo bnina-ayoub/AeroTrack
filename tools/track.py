@@ -17,19 +17,20 @@ import ctypes
 import torch
 import torch.backends.cudnn as cudnn
 from torch.nn.parallel import DistributedDataParallel as DDP
+
 # Force load torch shared libraries globally to resolve torchvision C++ symbols
 ctypes.CDLL(torch._C.__file__, mode=ctypes.RTLD_GLOBAL)
 from loguru import logger
 import math
 from torch.nn import functional as F
+
 # -----------------------------------------------------------------------------
 # 1. Environment & Path Configuration
 # -----------------------------------------------------------------------------
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if ROOT not in sys.path:
-    sys.path.insert(0, ROOT)  # Priority to custom aerotrack package
+    sys.path.insert(0, ROOT)
 
-# Submodule path for baseline ByteTrack imports
 BYTETRACK_SUBMODULE = os.path.join(ROOT, "third_party", "ByteTrack")
 if os.path.exists(BYTETRACK_SUBMODULE) and BYTETRACK_SUBMODULE not in sys.path:
     sys.path.append(BYTETRACK_SUBMODULE)
@@ -342,7 +343,6 @@ def main(exp, args, num_gpu):
     ensure_coco_json_exists(exp.data_dir, exp.val_ann, args.mot20)
     val_loader = exp.get_eval_loader(args.batch_size, is_distributed, args.test)
     
-    # MOTEvaluator from aerotrack
     evaluator = MOTEvaluator(
         args=args, dataloader=val_loader, img_size=exp.test_size,
         confthre=exp.test_conf, nmsthre=exp.nmsthre, num_classes=exp.num_classes
@@ -352,44 +352,47 @@ def main(exp, args, num_gpu):
     model.cuda(rank)
     model.eval()
 
-    if not args.speed and not args.trt:
-        ckpt_file = os.path.join(file_name, "best_ckpt.pth.tar") if args.ckpt is None else args.ckpt
-        logger.info("loading checkpoint")
-        ckpt = torch.load(ckpt_file, map_location=f"cuda:{rank}")
-        state_dict = ckpt["model_state_dict"]
-        model_state = model.state_dict()
-
-        for k in list(state_dict.keys()):
-            if 'relative_position_bias_table' in k and k in model_state:
-                ckpt_shape = state_dict[k].shape
-                model_shape = model_state[k].shape
-                
-                if ckpt_shape != model_shape:
-                    num_heads = ckpt_shape[1]
-                    S_ckpt = int(math.sqrt(ckpt_shape[0]))   # e.g., 13 (from 169)
-                    S_model = int(math.sqrt(model_shape[0])) # e.g., 9 (from 81)
-                    
-                    # Reshape checkpoint to [1, Heads, H, W] for interpolation
-                    table = state_dict[k].view(S_ckpt, S_ckpt, num_heads).permute(2, 0, 1).unsqueeze(0)
-                    
-                    # Interpolate down to the model's actual grid size
-                    table = F.interpolate(table, size=(S_model, S_model), mode='bicubic', align_corners=False)
-                    
-                    # Reshape back to [H*W, Heads] and update the dictionary
-                    state_dict[k] = table.squeeze(0).permute(1, 2, 0).view(-1, num_heads)
-
-        model.load_state_dict(state_dict, strict=False)
-        logger.info("loaded checkpoint done.")
-
-    if is_distributed: model = DDP(model, device_ids=[rank])
-    if args.fuse: model = fuse_model(model)
+    # --- INTÉGRATION TENSORRT ENGINE ---
+    trt_file = None
+    decoder = None
 
     if args.trt:
-        trt_file = os.path.join(file_name, "model_trt.pth")
+        # Pointe directement vers le fichier .trt compilé via trtexec
+        trt_file = os.path.join(ROOT, "aerotrack_fp16.trt")
+        if not os.path.exists(trt_file):
+            # Cherche aussi dans le répertoire d'expérience si besoin
+            trt_file = os.path.join(file_name, "aerotrack_fp16.trt")
+            
+        logger.info(f"⚡ Utilisation du moteur TensorRT natif : {trt_file}")
         model.head.decode_in_inference = False
         decoder = model.head.decode_outputs
     else:
-        trt_file, decoder = None, None
+        if not args.speed:
+            ckpt_file = os.path.join(file_name, "best_ckpt.pth.tar") if args.ckpt is None else args.ckpt
+            logger.info("loading checkpoint")
+            ckpt = torch.load(ckpt_file, map_location=f"cuda:{rank}")
+            state_dict = ckpt["model_state_dict"]
+            model_state = model.state_dict()
+
+            for k in list(state_dict.keys()):
+                if 'relative_position_bias_table' in k and k in model_state:
+                    ckpt_shape = state_dict[k].shape
+                    model_shape = model_state[k].shape
+                    
+                    if ckpt_shape != model_shape:
+                        num_heads = ckpt_shape[1]
+                        S_ckpt = int(math.sqrt(ckpt_shape[0]))
+                        S_model = int(math.sqrt(model_shape[0]))
+                        
+                        table = state_dict[k].view(S_ckpt, S_ckpt, num_heads).permute(2, 0, 1).unsqueeze(0)
+                        table = F.interpolate(table, size=(S_model, S_model), mode='bicubic', align_corners=False)
+                        state_dict[k] = table.squeeze(0).permute(1, 2, 0).view(-1, num_heads)
+
+            model.load_state_dict(state_dict, strict=False)
+            logger.info("loaded checkpoint done.")
+
+    if is_distributed: model = DDP(model, device_ids=[rank])
+    if args.fuse and not args.trt: model = fuse_model(model)
 
     logger.info("⏱️ Starting performance timer...")
     energy_monitor = EnergyMonitor(sample_interval_s=0.5) if rank == 0 else None
@@ -435,8 +438,6 @@ def main(exp, args, num_gpu):
             effective_gflops, gflops_reduction, exit_rate = compute_effective_gflops(total_early, total_total, full_network_gflops, p3_only_gflops)
             if effective_gflops is not None and gflops_reduction is not None:
                 logger.info(f"early exits {total_early}/{total_total} ({exit_rate:.1%}) | Effective GFLOPs: {effective_gflops:.2f} | GFLOPs reduction: {gflops_reduction:.2f}%")
-            else:
-                logger.info(f"early exits {total_early}/{total_total} ({total_early/total_total:.1%})")
 
     frame_latency_summary = summarize_frame_latency_records(getattr(evaluator, "last_frame_latency_records", []))
     if frame_latency_summary is not None:
