@@ -131,12 +131,12 @@ class MOTEvaluator:
         n_samples = len(self.dataloader) - 1
 
         if trt_file is not None:
-            import tensorrt as trt
-            logger.info(f"Chargement du moteur TensorRT natif depuis : {trt_file}")
-            with open(trt_file, "rb") as f, trt.Runtime(trt.Logger(trt.Logger.WARNING)) as runtime:
-                engine = runtime.deserialize_cuda_engine(f.read())
-                context = engine.create_execution_context()
-            model = context
+            from torch2trt import TRTModule
+            model_trt = TRTModule()
+            model_trt.load_state_dict(torch.load(trt_file))
+            x = torch.ones(1, 3, test_size[0], test_size[1]).cuda()
+            model(x)
+            model = model_trt
             
         distance_metric = getattr(self.args, 'distance', 'nwd')
         tracker = BYTETracker(self.args, distance_metric=distance_metric)
@@ -172,6 +172,7 @@ class MOTEvaluator:
                 is_time_record = cur_iter < len(self.dataloader) - 1
                 if is_time_record:
                     start = time.time()
+
                 # --- Inférence du modèle ---
                 outputs = model(imgs)
                 # capture whether model used early exit for this forward (may be None for TRT)
@@ -310,12 +311,14 @@ class MOTEvaluator:
         n_samples = len(self.dataloader) - 1
 
         if trt_file is not None:
-            import tensorrt as trt
-            logger.info(f"Chargement du moteur TensorRT natif depuis : {trt_file}")
-            with open(trt_file, "rb") as f, trt.Runtime(trt.Logger(trt.Logger.WARNING)) as runtime:
-                engine = runtime.deserialize_cuda_engine(f.read())
-                context = engine.create_execution_context()
-            model = context
+            from torch2trt import TRTModule
+
+            model_trt = TRTModule()
+            model_trt.load_state_dict(torch.load(trt_file))
+
+            x = torch.ones(1, 3, test_size[0], test_size[1]).cuda()
+            model(x)
+            model = model_trt
             
         tracker = Sort(self.args.track_thresh)
         prev_video_id = None
@@ -435,12 +438,14 @@ class MOTEvaluator:
         n_samples = len(self.dataloader) - 1
 
         if trt_file is not None:
-            import tensorrt as trt
-            logger.info(f"Chargement du moteur TensorRT natif depuis : {trt_file}")
-            with open(trt_file, "rb") as f, trt.Runtime(trt.Logger(trt.Logger.WARNING)) as runtime:
-                engine = runtime.deserialize_cuda_engine(f.read())
-                context = engine.create_execution_context()
-            model = context
+            from torch2trt import TRTModule
+
+            model_trt = TRTModule()
+            model_trt.load_state_dict(torch.load(trt_file))
+
+            x = torch.ones(1, 3, test_size[0], test_size[1]).cuda()
+            model(x)
+            model = model_trt
             
         tracker = DeepSort(model_folder, min_confidence=self.args.track_thresh)
         prev_video_id = None
@@ -559,12 +564,14 @@ class MOTEvaluator:
         n_samples = len(self.dataloader) - 1
 
         if trt_file is not None:
-            import tensorrt as trt
-            logger.info(f"Chargement du moteur TensorRT natif depuis : {trt_file}")
-            with open(trt_file, "rb") as f, trt.Runtime(trt.Logger(trt.Logger.WARNING)) as runtime:
-                engine = runtime.deserialize_cuda_engine(f.read())
-                context = engine.create_execution_context()
-            model = context
+            from torch2trt import TRTModule
+
+            model_trt = TRTModule()
+            model_trt.load_state_dict(torch.load(trt_file))
+
+            x = torch.ones(1, 3, test_size[0], test_size[1]).cuda()
+            model(x)
+            model = model_trt
             
         tracker = OnlineTracker(model_folder, min_cls_score=self.args.track_thresh)
         prev_video_id = None
