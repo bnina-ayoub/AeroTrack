@@ -116,7 +116,7 @@ class EnergyMonitor:
                 self._record_sample(power_watts)
             self._stop_event.wait(self.sample_interval_s)
 
-    def _sample_nvidia_smi(self, query: list[str]) -> Optional[float]:
+    def _sample_nvidia_smi(self, query) -> Optional[float]:
         try:
             output = subprocess.check_output(query, stderr=subprocess.DEVNULL, text=True, timeout=5)
         except Exception:
