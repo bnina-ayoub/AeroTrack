@@ -393,15 +393,7 @@ def main(exp, args, num_gpu):
 
     if is_distributed: model = DDP(model, device_ids=[rank])
     if args.fuse and not args.trt: model = fuse_model(model)
-    logger.info("Warming up GPU (20 frames) to stabilize clocks and power states...")
-    dummy_input = torch.randn(1, 3, exp.test_size[0], exp.test_size[1], device=f"cuda:{rank}")
-    if args.fp16 and not args.trt:
-        dummy_input = dummy_input.half()
     
-    with torch.no_grad():
-        for _ in range(20):
-            _ = model(dummy_input)
-            
     torch.cuda.synchronize()
     logger.info("⏱️ Starting performance timer...")
     energy_monitor = EnergyMonitor(sample_interval_s=0.5) if rank == 0 else None
