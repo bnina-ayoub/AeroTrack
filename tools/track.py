@@ -504,13 +504,29 @@ def main(exp, args, num_gpu):
         summary_df.loc['OVERALL', 'Worst_Frame_FPS'] = round(worst_frame["fps"], 2)
 
     if energy_summary is not None:
-        summary_df.loc['OVERALL', 'Energy_J'] = round(energy_summary.energy_j, 2)
+        # Calculate Average Energy per Frame (mJ)
+        avg_energy_per_frame_mj = (energy_summary.energy_j / max(num_frames, 1)) * 1000.0
+        
+        # Save to CSV DataFrame
+        summary_df.loc['OVERALL', 'Energy_Total_J'] = round(energy_summary.energy_j, 2)
+        summary_df.loc['OVERALL', 'Energy_Per_Frame_mJ'] = round(avg_energy_per_frame_mj, 2)
         summary_df.loc['OVERALL', 'Avg_Power_W'] = round(energy_summary.average_power_w, 2)
         summary_df.loc['OVERALL', 'Peak_Power_W'] = round(energy_summary.peak_power_w, 2)
         summary_df.loc['OVERALL', 'Energy_Backend'] = energy_summary.backend
         summary_df.loc['OVERALL', 'Energy_Samples'] = int(energy_summary.sample_count)
         
+        # Explicitly log to terminal so you can actually see it
+        logger.info(f"⚡ Energy Stats | Total: {energy_summary.energy_j:.2f} J | Per Frame: {avg_energy_per_frame_mj:.2f} mJ | Avg Power: {energy_summary.average_power_w:.2f} W")
+        
     summary_df.loc['OVERALL', 'Pipeline_Latency_ms'] = round(pipeline_latency, 2)
+    
+    if args.early_exit and 'total_total' in locals() and total_total > 0:
+        summary_df.loc['OVERALL', 'Early_Exits'] = int(total_early)
+        summary_df.loc['OVERALL', 'Total_Frames'] = int(total_total)
+        summary_df.loc['OVERALL', 'Early_Exit_Ratio'] = round(exit_rate, 4)
+        if 'effective_gflops' in locals() and effective_gflops is not None:
+            summary_df.loc['OVERALL', 'Effective_GFLOPs'] = round(effective_gflops, 2)
+            summary_df.loc['OVERALL', 'GFLOPs_Reduction_%'] = round(gflops_reduction, 2)
     
     fmt = mh.formatters
     change_fmt_list = ['num_false_positives', 'num_misses', 'num_switches', 'num_fragmentations', 'mostly_tracked', 'partially_tracked', 'mostly_lost']
