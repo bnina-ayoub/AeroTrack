@@ -408,8 +408,36 @@ def main(exp, args, num_gpu):
     
     total_time = t1 - t0
     num_frames = len(val_loader.dataset)
-    pipeline_latency = (total_time / max(num_frames, 1)) * 1000.0
-    pipeline_fps = num_frames / max(total_time, 1e-9)
+    records = getattr(evaluator, "last_frame_latency_records", [])
+    warmup_frames = 20
+    
+    if len(records) > warmup_frames:
+        valid_records = records[warmup_frames:]
+        valid_frames = len(valid_records)
+        
+        # Calculate valid pipeline latency strictly for frames 21+
+        valid_time_ms = sum(r["latency_ms"] for r in valid_records)
+        pipeline_latency = valid_time_ms / valid_frames
+        pipeline_fps = 1000.0 / pipeline_latency
+        
+        # Prorate energy usage to exclude the warm-up phase
+        warmup_time_ms = sum(r["latency_ms"] for r in records[:warmup_frames])
+        total_recorded_time_ms = valid_time_ms + warmup_time_ms
+        
+        if energy_summary is not None and total_recorded_time_ms > 0:
+            valid_energy_ratio = valid_time_ms / total_recorded_time_ms
+            valid_energy_j = energy_summary.energy_j * valid_energy_ratio
+            avg_energy_per_frame_mj = (valid_energy_j / valid_frames) * 1000.0
+        else:
+            avg_energy_per_frame_mj = 0.0
+            
+        logger.info(f"🔥 Warmup excluded: Dropped first {warmup_frames} frames from averages. Averaging over remaining {valid_frames} frames.")
+    else:
+        # Fallback if the video is extremely short
+        pipeline_latency = (total_time / max(num_frames, 1)) * 1000.0
+        pipeline_fps = num_frames / max(total_time, 1e-9)
+        if energy_summary is not None:
+            avg_energy_per_frame_mj = (energy_summary.energy_j / max(num_frames, 1)) * 1000.0
     
     hardware_latency = None
     match = re.search(r"Average inference time:\s*([0-9]+(?:\.[0-9]+)?)\s*ms", summary_coco)
