@@ -424,10 +424,16 @@ def main(exp, args, num_gpu):
         warmup_time_ms = sum(r["latency_ms"] for r in records[:warmup_frames])
         total_recorded_time_ms = valid_time_ms + warmup_time_ms
         
-        if energy_summary is not None and total_recorded_time_ms > 0:
-            valid_energy_ratio = valid_time_ms / total_recorded_time_ms
-            valid_energy_j = energy_summary.energy_j * valid_energy_ratio
-            avg_energy_per_frame_mj = (valid_energy_j / valid_frames) * 1000.0
+        if energy_summary is not None:
+            summary_df.loc['OVERALL', 'Energy_Total_J'] = round(valid_energy_j, 2)
+            summary_df.loc['OVERALL', 'Energy_Per_Frame_mJ'] = round(avg_energy_per_frame_mj, 2)
+            summary_df.loc['OVERALL', 'Avg_Power_W'] = round(energy_summary.average_power_w, 2)
+            summary_df.loc['OVERALL', 'Peak_Power_W'] = round(energy_summary.peak_power_w, 2)
+            summary_df.loc['OVERALL', 'Energy_Backend'] = energy_summary.backend
+            summary_df.loc['OVERALL', 'Energy_Samples'] = int(energy_summary.sample_count)
+            
+            logger.info(f"⚡ Valid Energy Stats (Post-Warmup) | Total: {valid_energy_j:.2f} J | Per Frame: {avg_energy_per_frame_mj:.2f} mJ | Avg Power: {energy_summary.average_power_w:.2f} W")
+                avg_energy_per_frame_mj = (valid_energy_j / valid_frames) * 1000.0
         else:
             avg_energy_per_frame_mj = 0.0
             
