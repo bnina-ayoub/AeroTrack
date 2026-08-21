@@ -405,6 +405,7 @@ def main(exp, args, num_gpu):
         *_, summary_coco = evaluator.evaluate(model, is_distributed, args.fp16, trt_file, decoder, exp.test_size, results_folder)
     finally:
         energy_summary = energy_monitor.stop() if energy_monitor is not None else None
+    
     t1 = time()
     
     total_time = t1 - t0
@@ -412,47 +413,54 @@ def main(exp, args, num_gpu):
     records = getattr(evaluator, "last_frame_latency_records", [])
     warmup_frames = 20
     
+    # ---------------------------------------------------------
+    # 1. WARMUP EXCLUSION FOR SPEED & ENERGY
+    # ---------------------------------------------------------
     if len(records) > warmup_frames:
         valid_records = records[warmup_frames:]
         valid_frames = len(valid_records)
         
-        # Calculate valid pipeline latency strictly for frames 21+
-        valid_time_ms = sum(r["latency_ms"] for r in valid_records)
-        pipeline_latency = valid_time_ms / valid_frames
-        pipeline_fps = 1000.0 / pipeline_latency
+        # Clean Hardware Latency (Inference Only, frames 21+)
+        hw_latency = sum(r["latency_ms"] for r in valid_records) / valid_frames
+        hw_fps = 1000.0 / hw_latency
         
-        # Prorate energy usage to exclude the warm-up phase
+        # Clean Pipeline Latency (Total loop time minus warmup overhead)
         warmup_time_ms = sum(r["latency_ms"] for r in records[:warmup_frames])
-        total_recorded_time_ms = valid_time_ms + warmup_time_ms
+        valid_pipeline_time_s = total_time - (warmup_time_ms / 1000.0)
+        pipeline_latency = (valid_pipeline_time_s / valid_frames) * 1000.0
+        pipeline_fps = valid_frames / max(valid_pipeline_time_s, 1e-9)
         
-        if energy_summary is not None:
-            summary_df.loc['OVERALL', 'Energy_Total_J'] = round(valid_energy_j, 2)
-            summary_df.loc['OVERALL', 'Energy_Per_Frame_mJ'] = round(avg_energy_per_frame_mj, 2)
-            summary_df.loc['OVERALL', 'Avg_Power_W'] = round(energy_summary.average_power_w, 2)
-            summary_df.loc['OVERALL', 'Peak_Power_W'] = round(energy_summary.peak_power_w, 2)
-            summary_df.loc['OVERALL', 'Energy_Backend'] = energy_summary.backend
-            summary_df.loc['OVERALL', 'Energy_Samples'] = int(energy_summary.sample_count)
-            
-            logger.info(f"⚡ Valid Energy Stats (Post-Warmup) | Total: {valid_energy_j:.2f} J | Per Frame: {avg_energy_per_frame_mj:.2f} mJ | Avg Power: {energy_summary.average_power_w:.2f} W") 
+        if energy_summary is not None and valid_pipeline_time_s > 0:
+            total_recorded_time_ms = (valid_pipeline_time_s * 1000.0) + warmup_time_ms
+            valid_energy_ratio = (valid_pipeline_time_s * 1000.0) / total_recorded_time_ms
+            valid_energy_j = energy_summary.energy_j * valid_energy_ratio
             avg_energy_per_frame_mj = (valid_energy_j / valid_frames) * 1000.0
         else:
+            valid_energy_j = 0.0
             avg_energy_per_frame_mj = 0.0
             
-        logger.info(f"🔥 Warmup excluded: Dropped first {warmup_frames} frames from averages. Averaging over remaining {valid_frames} frames.")
+        logger.info(f"🔥 Warmup excluded: Dropped first {warmup_frames} frames. Averaging over remaining {valid_frames} frames.")
     else:
-        # Fallback if the video is extremely short
+        # Fallback if the dataset is extremely short (< 20 frames)
         pipeline_latency = (total_time / max(num_frames, 1)) * 1000.0
         pipeline_fps = num_frames / max(total_time, 1e-9)
+        
+        match = re.search(r"Average inference time:\s*([0-9]+(?:\.[0-9]+)?)\s*ms", summary_coco)
+        hw_latency = float(match.group(1)) if match else pipeline_latency
+        hw_fps = 1000.0 / hw_latency
+        
         if energy_summary is not None:
-            avg_energy_per_frame_mj = (energy_summary.energy_j / max(num_frames, 1)) * 1000.0
-    
-    hardware_latency = None
-    match = re.search(r"Average inference time:\s*([0-9]+(?:\.[0-9]+)?)\s*ms", summary_coco)
-    if match:
-        hardware_latency = float(match.group(1))
+            valid_energy_j = energy_summary.energy_j
+            avg_energy_per_frame_mj = (valid_energy_j / max(num_frames, 1)) * 1000.0
+        else:
+            valid_energy_j = 0.0
+            avg_energy_per_frame_mj = 0.0
 
     logger.info("\n" + summary_coco)
 
+    # ---------------------------------------------------------
+    # 2. EARLY EXIT STATS
+    # ---------------------------------------------------------
     if hasattr(evaluator, "last_early_stats"):
         stats = evaluator.last_early_stats
         total_early, total_total = 0, 0
@@ -475,6 +483,9 @@ def main(exp, args, num_gpu):
             if effective_gflops is not None and gflops_reduction is not None:
                 logger.info(f"early exits {total_early}/{total_total} ({exit_rate:.1%}) | Effective GFLOPs: {effective_gflops:.2f} | GFLOPs reduction: {gflops_reduction:.2f}%")
 
+    # ---------------------------------------------------------
+    # 3. EXTREME FRAMES
+    # ---------------------------------------------------------
     frame_latency_summary = summarize_frame_latency_records(getattr(evaluator, "last_frame_latency_records", []))
     if frame_latency_summary is not None:
         best_frame = frame_latency_summary["best"]
@@ -486,27 +497,16 @@ def main(exp, args, num_gpu):
             )
         )
 
-    if energy_summary is not None:
-        logger.info(
-            "Energy usage | backend: {} | energy: {:.2f} J | avg power: {:.2f} W | peak power: {:.2f} W | samples: {}".format(
-                energy_summary.backend,
-                energy_summary.energy_j,
-                energy_summary.average_power_w,
-                energy_summary.peak_power_w,
-                energy_summary.sample_count,
-            )
-        )
-
+    # ---------------------------------------------------------
+    # 4. TRACKING METRICS & DATAFRAME GENERATION
+    # ---------------------------------------------------------
     mm.lap.default_solver = 'lap'
     gt_type = '_val_half' if exp.val_ann == 'val_half.json' else ''
-    
     split_folder = 'test' 
     gt_pattern = os.path.join(exp.data_dir, split_folder, f'*/gt/gt{gt_type}.txt')
     gtfiles = glob.glob(gt_pattern)
     tsfiles = [f for f in glob.glob(os.path.join(results_folder, '*.txt')) if not os.path.basename(f).startswith('eval')]
 
-    logger.info(f'Recherche des fichiers GT avec le chemin : {gt_pattern}')
-    
     gt = OrderedDict([(Path(f).parent.parent.name, mm.io.loadtxt(f, fmt='mot15-2D', min_confidence=1)) for f in gtfiles])
     ts = OrderedDict([(os.path.splitext(Path(f).name)[0], mm.io.loadtxt(f, fmt='mot15-2D', min_confidence=-1)) for f in tsfiles])    
     
@@ -525,9 +525,13 @@ def main(exp, args, num_gpu):
         for divided in div_dict[divisor]:
             summary_df[divided] = (summary_df[divided] / summary_df[divisor])
             
-    if hardware_latency is not None:
-        summary_df.loc['OVERALL', 'HW_Latency_ms'] = round(hardware_latency, 2)
-        summary_df.loc['OVERALL', 'HW_FPS'] = round(1000.0 / hardware_latency, 2)
+    # ---------------------------------------------------------
+    # 5. INJECT ALL CUSTOM METRICS INTO DATAFRAME
+    # ---------------------------------------------------------
+    summary_df.loc['OVERALL', 'HW_Latency_ms'] = round(hw_latency, 2)
+    summary_df.loc['OVERALL', 'HW_FPS'] = round(hw_fps, 2)
+    summary_df.loc['OVERALL', 'Pipeline_Latency_ms'] = round(pipeline_latency, 2)
+    summary_df.loc['OVERALL', 'Pipeline_FPS'] = round(pipeline_fps, 2)
 
     if frame_latency_summary is not None:
         summary_df.loc['OVERALL', 'Best_Frame_Sequence'] = best_frame["sequence"]
@@ -540,21 +544,13 @@ def main(exp, args, num_gpu):
         summary_df.loc['OVERALL', 'Worst_Frame_FPS'] = round(worst_frame["fps"], 2)
 
     if energy_summary is not None:
-        # Calculate Average Energy per Frame (mJ)
-        avg_energy_per_frame_mj = (energy_summary.energy_j / max(num_frames, 1)) * 1000.0
-        
-        # Save to CSV DataFrame
-        summary_df.loc['OVERALL', 'Energy_Total_J'] = round(energy_summary.energy_j, 2)
+        summary_df.loc['OVERALL', 'Energy_Total_J'] = round(valid_energy_j, 2)
         summary_df.loc['OVERALL', 'Energy_Per_Frame_mJ'] = round(avg_energy_per_frame_mj, 2)
         summary_df.loc['OVERALL', 'Avg_Power_W'] = round(energy_summary.average_power_w, 2)
         summary_df.loc['OVERALL', 'Peak_Power_W'] = round(energy_summary.peak_power_w, 2)
         summary_df.loc['OVERALL', 'Energy_Backend'] = energy_summary.backend
         summary_df.loc['OVERALL', 'Energy_Samples'] = int(energy_summary.sample_count)
-        
-        # Explicitly log to terminal so you can actually see it
-        logger.info(f"⚡ Energy Stats | Total: {energy_summary.energy_j:.2f} J | Per Frame: {avg_energy_per_frame_mj:.2f} mJ | Avg Power: {energy_summary.average_power_w:.2f} W")
-        
-    summary_df.loc['OVERALL', 'Pipeline_Latency_ms'] = round(pipeline_latency, 2)
+        logger.info(f"⚡ Energy Stats | Total: {valid_energy_j:.2f} J | Per Frame: {avg_energy_per_frame_mj:.2f} mJ | Avg Power: {energy_summary.average_power_w:.2f} W")
     
     if args.early_exit and 'total_total' in locals() and total_total > 0:
         summary_df.loc['OVERALL', 'Early_Exits'] = int(total_early)
@@ -582,7 +578,8 @@ def main(exp, args, num_gpu):
            make_video=args.vis_video, 
            video_fps=args.vis_fps
        )
-    logger.info(f"Latency: {hardware_latency:.2f} ms/img | FPS: {1000.0/hardware_latency:.2f}")
+    
+    logger.info(f"Final Clean Latency: {hw_latency:.2f} ms/img | Clean FPS: {hw_fps:.2f}")
     logger.info('Completed')
 
 
