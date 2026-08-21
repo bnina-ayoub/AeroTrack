@@ -88,6 +88,7 @@ def make_parser():
     parser.add_argument("--vis_video", dest="vis_video", default=False, action="store_true", help="also export one mp4 per sequence")
     parser.add_argument("--vis_fps", type=int, default=30, help="fps used for exported visualization videos")
     parser.add_argument("--early_exit", dest="early_exit", default=False, action="store_true", help="Activer le routage dynamique Early Exit.")
+    parser.add_argument("--monitor_energy", dest="monitor_energy", default=False, action="store_true", help="Enable hardware energy monitoring (requires sudo).")
     return parser
 
 
@@ -396,7 +397,7 @@ def main(exp, args, num_gpu):
     
     torch.cuda.synchronize()
     logger.info("⏱️ Starting performance timer...")
-    energy_monitor = EnergyMonitor(sample_interval_s=0.5) if rank == 0 else None
+    energy_monitor = EnergyMonitor(sample_interval_s=0.5) if (args.monitor_energy and rank == 0) else None
     if energy_monitor is not None:
         energy_monitor.start()
     t0 = time()
