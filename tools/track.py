@@ -395,53 +395,55 @@ def main(exp, args, num_gpu):
     if is_distributed: model = DDP(model, device_ids=[rank])
     if args.fuse and not args.trt: model = fuse_model(model)
     
+    # ---------------------------------------------------------
+    # 0. HARDWARE WARMUP (20 DUMMY FRAMES)
+    # ---------------------------------------------------------
+    logger.info("🔥 Warming up GPU with 20 dummy frames to stabilize clocks...")
+    dummy_input = torch.randn(1, 3, exp.test_size[0], exp.test_size[1], device=f"cuda:{rank}")
+    if args.fp16 and not args.trt:
+        dummy_input = dummy_input.half()
+    
+    with torch.no_grad():
+        for _ in range(20):
+            _ = model(dummy_input)
     torch.cuda.synchronize()
+    # ---------------------------------------------------------
+    
     logger.info("⏱️ Starting performance timer...")
     energy_monitor = EnergyMonitor(sample_interval_s=0.5) if (args.monitor_energy and rank == 0) else None
     if energy_monitor is not None:
         energy_monitor.start()
+        
     t0 = time()
     try:
         *_, summary_coco = evaluator.evaluate(model, is_distributed, args.fp16, trt_file, decoder, exp.test_size, results_folder)
     finally:
         energy_summary = energy_monitor.stop() if energy_monitor is not None else None
-    
     t1 = time()
     
     total_time = t1 - t0
     num_frames = len(val_loader.dataset)
     records = getattr(evaluator, "last_frame_latency_records", [])
-    warmup_frames = 20
     
     # ---------------------------------------------------------
-    # 1. WARMUP EXCLUSION FOR SPEED & ENERGY
+    # 1. SPEED & ENERGY MATH (ALL FRAMES VALID)
     # ---------------------------------------------------------
-    if len(records) > warmup_frames:
-        valid_records = records[warmup_frames:]
-        valid_frames = len(valid_records)
-        
-        # Clean Hardware Latency (Inference Only, frames 21+)
-        hw_latency = sum(r["latency_ms"] for r in valid_records) / valid_frames
+    valid_frames = len(records)
+    if valid_frames > 0:
+        hw_latency = sum(r["latency_ms"] for r in records) / valid_frames
         hw_fps = 1000.0 / hw_latency
         
-        # Clean Pipeline Latency (Total loop time minus warmup overhead)
-        warmup_time_ms = sum(r["latency_ms"] for r in records[:warmup_frames])
-        valid_pipeline_time_s = total_time - (warmup_time_ms / 1000.0)
-        pipeline_latency = (valid_pipeline_time_s / valid_frames) * 1000.0
-        pipeline_fps = valid_frames / max(valid_pipeline_time_s, 1e-9)
+        pipeline_latency = (total_time / valid_frames) * 1000.0
+        pipeline_fps = valid_frames / max(total_time, 1e-9)
         
-        if energy_summary is not None and valid_pipeline_time_s > 0:
-            total_recorded_time_ms = (valid_pipeline_time_s * 1000.0) + warmup_time_ms
-            valid_energy_ratio = (valid_pipeline_time_s * 1000.0) / total_recorded_time_ms
-            valid_energy_j = energy_summary.energy_j * valid_energy_ratio
+        if energy_summary is not None:
+            valid_energy_j = energy_summary.energy_j
             avg_energy_per_frame_mj = (valid_energy_j / valid_frames) * 1000.0
         else:
             valid_energy_j = 0.0
             avg_energy_per_frame_mj = 0.0
-            
-        logger.info(f"🔥 Warmup excluded: Dropped first {warmup_frames} frames. Averaging over remaining {valid_frames} frames.")
     else:
-        # Fallback if the dataset is extremely short (< 20 frames)
+        # Fallback if dataset is extremely short or missing
         pipeline_latency = (total_time / max(num_frames, 1)) * 1000.0
         pipeline_fps = num_frames / max(total_time, 1e-9)
         
@@ -457,7 +459,6 @@ def main(exp, args, num_gpu):
             avg_energy_per_frame_mj = 0.0
 
     logger.info("\n" + summary_coco)
-
     # ---------------------------------------------------------
     # 2. EARLY EXIT STATS
     # ---------------------------------------------------------
