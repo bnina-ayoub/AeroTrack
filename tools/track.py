@@ -433,8 +433,8 @@ def main(exp, args, num_gpu):
             summary_df.loc['OVERALL', 'Energy_Backend'] = energy_summary.backend
             summary_df.loc['OVERALL', 'Energy_Samples'] = int(energy_summary.sample_count)
             
-            logger.info(f"⚡ Valid Energy Stats (Post-Warmup) | Total: {valid_energy_j:.2f} J | Per Frame: {avg_energy_per_frame_mj:.2f} mJ | Avg Power: {energy_summary.average_power_w:.2f} W")
-                avg_energy_per_frame_mj = (valid_energy_j / valid_frames) * 1000.0
+            logger.info(f"⚡ Valid Energy Stats (Post-Warmup) | Total: {valid_energy_j:.2f} J | Per Frame: {avg_energy_per_frame_mj:.2f} mJ | Avg Power: {energy_summary.average_power_w:.2f} W") 
+            avg_energy_per_frame_mj = (valid_energy_j / valid_frames) * 1000.0
         else:
             avg_energy_per_frame_mj = 0.0
             
