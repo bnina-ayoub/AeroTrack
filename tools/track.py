@@ -395,6 +395,14 @@ def main(exp, args, num_gpu):
     if is_distributed: model = DDP(model, device_ids=[rank])
     if args.fuse and not args.trt: model = fuse_model(model)
     if args.fp16 and not args.trt: model = model.half()
+    # NEW: Attempt to compile the model into a C++ representation with TorchScript
+    if not args.trt:
+        logger.info("Attempting to compile model with torch.jit.script...")
+        try:
+            model = torch.jit.script(model)
+            logger.info("Successfully compiled with TorchScript! Dynamic routing preserved.")
+        except Exception as e:
+            logger.warning(f"TorchScript compilation failed (normal for some architectures). Falling back to native PyTorch. Error: {e}")
     torch.cuda.synchronize()
     # ---------------------------------------------------------
     
@@ -405,7 +413,9 @@ def main(exp, args, num_gpu):
         
     t0 = time()
     try:
-        *_, summary_coco = evaluator.evaluate(model, is_distributed, args.fp16, trt_file, decoder, exp.test_size, results_folder)
+        # NEW: Wrap the evaluation in strict inference mode to eliminate PyTorch overhead
+        with torch.inference_mode():
+            *_, summary_coco = evaluator.evaluate(model, is_distributed, args.fp16, trt_file, decoder, exp.test_size, results_folder)
     finally:
         energy_summary = energy_monitor.stop() if energy_monitor is not None else None
     t1 = time()
