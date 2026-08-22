@@ -394,7 +394,7 @@ def main(exp, args, num_gpu):
 
     if is_distributed: model = DDP(model, device_ids=[rank])
     if args.fuse and not args.trt: model = fuse_model(model)
-    
+    if args.fp16 and not args.trt: model = model.half()
     torch.cuda.synchronize()
     # ---------------------------------------------------------
     
