@@ -395,17 +395,6 @@ def main(exp, args, num_gpu):
     if is_distributed: model = DDP(model, device_ids=[rank])
     if args.fuse and not args.trt: model = fuse_model(model)
     
-    # ---------------------------------------------------------
-    # 0. HARDWARE WARMUP (20 DUMMY FRAMES)
-    # ---------------------------------------------------------
-    logger.info("🔥 Warming up GPU with 20 dummy frames to stabilize clocks...")
-    dummy_input = torch.randn(1, 3, exp.test_size[0], exp.test_size[1], device=f"cuda:{rank}")
-    if args.fp16 and not args.trt:
-        dummy_input = dummy_input.half()
-    
-    with torch.no_grad():
-        for _ in range(20):
-            _ = model(dummy_input)
     torch.cuda.synchronize()
     # ---------------------------------------------------------
     
