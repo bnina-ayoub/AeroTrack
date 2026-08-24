@@ -2,7 +2,6 @@
 
 AeroTrack is an object tracking architecture optimized for Unmanned Aerial Vehicles (UAVs). Built on the solid foundations of the YOLOX detection framework and the ByteTrack tracking engine, our approach introduces an innovative dynamic routing mechanism (Early Exit) driven by a Decision Gate.
 
-To bridge theoretical algorithmic efficiency with physical edge deployment, AeroTrack physically decouples the network into a Dual TensorRT Engine pipeline. This hardware-aware architecture allows for true edge acceleration (FP16) while preserving the dynamic Python control flow, delivering a drastic reduction in computational cost (GFLOPs) and physical energy consumption (Joules) without sacrificing tracking accuracy.
 ---
 # ⚙️ Installation and Setup
 
