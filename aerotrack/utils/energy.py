@@ -67,33 +67,41 @@ class EnergyMonitor:
         return self.summary()
 
     def summary(self) -> Optional[EnergySummary]:
-        if len(self._samples) < 2:
+        if len(self._samples) == 0:
             return None
 
-        timestamps = [sample[0] for sample in self._samples]
-        powers = [sample[1] for sample in self._samples]
-        duration_s = max(timestamps[-1] - timestamps[0], 0.0)
-        if duration_s <= 0.0:
-            return None
+        duration_s = max(self._samples[-1][0] - self._samples[0][0], self.sample_interval_s)
 
+        # Fallback for ultra-fast runs that only caught 1 sample
+        if len(self._samples) == 1:
+            avg_power = self._samples[0][1]
+            return EnergySummary(
+                backend=self.backend or "unknown",
+                duration_s=duration_s,
+                energy_j=avg_power * duration_s,
+                average_power_w=avg_power,
+                peak_power_w=avg_power,
+                sample_count=1,
+            )
+
+        # Original math for 2+ samples
         energy_j = 0.0
         for index in range(1, len(self._samples)):
             t_prev, p_prev = self._samples[index - 1]
             t_curr, p_curr = self._samples[index]
             energy_j += 0.5 * (p_prev + p_curr) * max(t_curr - t_prev, 0.0)
 
+        powers = [sample[1] for sample in self._samples]
         average_power_w = energy_j / duration_s if duration_s > 0 else 0.0
-        peak_power_w = max(powers)
-
+        
         return EnergySummary(
             backend=self.backend or "unknown",
             duration_s=duration_s,
             energy_j=energy_j,
             average_power_w=average_power_w,
-            peak_power_w=peak_power_w,
+            peak_power_w=max(powers),
             sample_count=len(self._samples),
         )
-
     def _record_sample(self, power_watts: float) -> None:
         self._samples.append((time.perf_counter(), power_watts))
 
@@ -134,11 +142,12 @@ class EnergyMonitor:
 
     def _run_tegrastats(self) -> None:
         try:
+            interval_ms = int(self.sample_interval_s * 1000)
             self._process = subprocess.Popen(
-                ["tegrastats"],
+                ["tegrastats", "--interval", str(interval_ms)], # <-- ADDED INTERVAL
                 stdout=subprocess.PIPE,
                 stderr=subprocess.DEVNULL,
-                text=True,
+                universal_newlines=True,
                 bufsize=1,
             )
         except Exception as exc:

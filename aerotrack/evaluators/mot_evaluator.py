@@ -135,6 +135,8 @@ class MOTEvaluator:
             model_trt = TRTModule()
             model_trt.load_state_dict(torch.load(trt_file))
             x = torch.ones(1, 3, test_size[0], test_size[1]).cuda()
+            if half:
+                x = x.half()
             model(x)
             model = model_trt
             

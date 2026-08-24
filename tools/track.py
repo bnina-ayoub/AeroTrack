@@ -1,3 +1,4 @@
+import cv2
 import argparse
 import os
 import random
@@ -6,7 +7,6 @@ import sys
 import numpy as np
 import warnings
 import glob
-import cv2
 import json
 import motmetrics as mm
 from time import time
@@ -352,21 +352,31 @@ def main(exp, args, num_gpu):
     torch.cuda.set_device(rank)
     model.cuda(rank)
     model.eval()
-
     # --- INTÉGRATION TENSORRT ENGINE ---
     trt_file = None
     decoder = None
 
     if args.trt:
-        # Pointe directement vers le fichier .trt compilé via trtexec
-        trt_file = os.path.join(ROOT, "aerotrack_fp16.trt")
-        if not os.path.exists(trt_file):
-            # Cherche aussi dans le répertoire d'expérience si besoin
-            trt_file = os.path.join(file_name, "aerotrack_fp16.trt")
-            
-        logger.info(f"⚡ Utilisation du moteur TensorRT natif : {trt_file}")
+        logger.info("⚡ Loading Hardware-Accelerated Dynamic Routing Engine...")
+        from dual_model_loader import DualTRTModel
+        
+        original_model = exp.get_model()
+
+        model = DualTRTModel(
+            "early_stage_fp16.trt",
+            "deep_stage_fp16.trt",
+            num_classes=exp.num_classes,  # Injects exactly 1 class (6 channels)
+            img_hw=exp.test_size,
+            gate=original_model.decision_gate,
+            early_exit_enabled=exp.early_exit_enabled
+        )
+
+        model.head = original_model.head
         model.head.decode_in_inference = False
-        decoder = model.head.decode_outputs
+        decoder = None  # Prevent double-decoding NaN explosion
+
+        torch.cuda.set_device(rank)
+        model.cuda(rank)
     else:
         if not args.speed:
             ckpt_file = os.path.join(file_name, "best_ckpt.pth.tar") if args.ckpt is None else args.ckpt
@@ -409,6 +419,7 @@ def main(exp, args, num_gpu):
     logger.info("⏱️ Starting performance timer...")
     energy_monitor = EnergyMonitor(sample_interval_s=0.5) if (args.monitor_energy and rank == 0) else None
     if energy_monitor is not None:
+        print("Energy Monitoring Started!")
         energy_monitor.start()
         
     t0 = time()
