@@ -6,7 +6,7 @@
 
 # 1. Variables de configuration (À ajuster selon ton projet)
 EXP_FILE="exps/aerotrack_proposed.py"
-CKPT_FILE="weights/early_exit_head_dark3.pth" # <-- Remplace ceci par le chemin exact de tes poids
+CKPT_FILE="early_exit_weights.pth" # <-- Remplace ceci par le chemin exact de tes poids
 
 echo "========================================================================"
 echo "🚀 Lancement des 4 expériences d'évaluation automatisées"
@@ -30,12 +30,12 @@ for METRIC in "${METRICS[@]}"; do
         echo ""
         echo "------------------------------------------------------------------------"
         echo "⏳ DÉMARRAGE : Distance = $METRIC | Mode = $MODE"
-        echo "💻 Commande exécutée : python tools/track.py --fp16 --fuse -d 1 -b 1 -f $EXP_FILE -c $CKPT_FILE --distance $METRIC $EE_FLAG --save_vis"
+        echo "💻 Commande exécutée : sudo ~/AeroTrack/venv/bin/python tools/track.py --fp16 --fuse --trt -d 1 -b 1 -f $EXP_FILE --distance $METRIC $EE_FLAG --monitor_energy data_num_workers 0 "
         echo "------------------------------------------------------------------------"
         echo ""
         
         # 4. Exécution réelle de la commande Python
-        python tools/track.py --fp16 --fuse -d 1 -b 1 -f $EXP_FILE -c $CKPT_FILE --distance $METRIC $EE_FLAG --save_vis
+        sudo ~/AeroTrack/venv/bin/python tools/track.py --fp16 --fuse --trt -d 1 -b 1 -f $EXP_FILE --distance $METRIC $EE_FLAG --monitor_energy data_num_workers 0
         
         echo ""
         echo "✅ TERMINÉ : Distance = $METRIC | Mode = $MODE"
