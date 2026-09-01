@@ -1,3 +1,4 @@
+<img width="6332" height="3756" alt="aerotrack_main_arch" src="https://github.com/user-attachments/assets/e9991032-b7f4-4f3c-a122-e418b63fb39e" />
 # AeroTrack
 
 AeroTrack is a UAV multi-object tracking framework built on top of YOLOX + ByteTrack, with dynamic early-exit routing for compute-efficient inference in easy frames while keeping full-capacity processing for ambiguous scenes.
@@ -14,7 +15,7 @@ AeroTrack is a UAV multi-object tracking framework built on top of YOLOX + ByteT
 
 ## Architecture
 
-![AeroTrack Architecture](docs/assets/frame_routing_stacked.png)
+![AeroTrack Architecture](docs/assets/aerotrack_main_arch.png)
 
 ## Ablation Snapshot
 
