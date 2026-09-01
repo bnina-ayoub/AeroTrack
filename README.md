@@ -16,13 +16,17 @@ AeroTrack is a UAV multi-object tracking framework built on top of YOLOX + ByteT
 
 ![AeroTrack Architecture](docs/assets/aerotrack_main_arch.png)
 
-## Ablation Snapshot
 
-The ablation study reports a best **IDF1 = 85.1** for the full AeroTrack configuration.
+### UAVSwarm Workstation Benchmark: Temporal Bounds, Throughput, and Energy Telemetry
 
-| Configuration | IDF1 |
-|---|---:|
-| AeroTrack (best ablation setting) | **85.1** |
+| Architecture | Distance | BCET (ms) | Avg (ms) | WCET (ms) | FPS | Peak (W) | Avg (W) | Total (J) | Frame (J) |
+|:---|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| Baseline | IoU | 6.8 | 9.0 | 190.8 | 111.2 | -- | 32.9 | 2013.1 | 0.40 |
+| Baseline | NWD | 6.6 | 8.9 | 201.7 | 111.9 | -- | 33.3 | 1997.4 | 0.40 |
+| Early Exit | IoU | 3.1 | 8.2 | 220.8 | 122.8 | -- | 32.9 | 1830.6 | 0.36 |
+| **AeroTrack** | **NWD** | **3.0** | **8.2** | **195.0** | **121.6** | **--** | **33.1** | **1842.2** | **0.37** |
+
+> **Note:** Profiling executed natively on the high-performance workstation utilizing dual FP16 TensorRT engines[cite: 3, 4, 5, 6]. Algorithmic footprint: 28.24 GFLOPs (full path) vs. 13.46 GFLOPs (P3 early exit)
 
 ---
 
