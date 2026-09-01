@@ -14,4 +14,7 @@ __pycache__/
 # Fichiers système (Recommandé)
 .DS_Store
 Thumbs.db
-frame_routing_stacked.png
+
+# Build artifacts
+build/
+*.so
