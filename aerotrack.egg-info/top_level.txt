@@ -1,0 +1,7 @@
+aerotrack
+build
+docs
+exps
+third_party
+tools
+weights

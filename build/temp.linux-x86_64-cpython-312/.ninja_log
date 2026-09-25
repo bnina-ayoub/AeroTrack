@@ -1,4 +1,4 @@
-# ninja log v7
-0	7422	1785269460859885436	/home/bninaos/UAV-Tracking-Project/AeroTrack/build/temp.linux-x86_64-cpython-312/home/bninaos/UAV-Tracking-Project/AeroTrack/aerotrack/layers/csrc/cocoeval/cocoeval.o	3db36151adac9181
-1	8546	1785269460860885449	/home/bninaos/UAV-Tracking-Project/AeroTrack/build/temp.linux-x86_64-cpython-312/home/bninaos/UAV-Tracking-Project/AeroTrack/aerotrack/layers/csrc/vision.o	3c35a738a287a47b
-0	1215	1785269469616996774	/home/bninaos/UAV-Tracking-Project/AeroTrack/build/temp.linux-x86_64-cpython-312/aerotrack/tracker/cython_nwd.o	690a59a06c55cef8
+# ninja log v6
+3	9296	1790310261727219677	/home/bninaos/UAV-Tracking-Project/ros2_ws/AeroTrack/build/temp.linux-x86_64-cpython-312/home/bninaos/UAV-Tracking-Project/ros2_ws/AeroTrack/aerotrack/layers/csrc/cocoeval/cocoeval.o	acacc4c86a5f2f9
+4	11516	1790310261728219682	/home/bninaos/UAV-Tracking-Project/ros2_ws/AeroTrack/build/temp.linux-x86_64-cpython-312/home/bninaos/UAV-Tracking-Project/ros2_ws/AeroTrack/aerotrack/layers/csrc/vision.o	9469714c3e9954e9
+0	1601	1790310273739278883	/home/bninaos/UAV-Tracking-Project/ros2_ws/AeroTrack/build/temp.linux-x86_64-cpython-312/aerotrack/tracker/cython_nwd.o	d3dd2f78476825fd
