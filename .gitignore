@@ -6,6 +6,7 @@ env/
 dataset/
 weights/
 YOLOX_outputs/
+aerotrack.egg-info/
 # Fichiers générés automatiquement par Python (Recommandé)
 __pycache__/
 *.pyc
