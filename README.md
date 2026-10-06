@@ -217,8 +217,9 @@ Suggested release items:
 
 ```bibtex
 @misc{aerotrack2026,
-  title={AeroTrack: Dynamic Routing for UAV Multi-Object Tracking},
-  author={Ayoub Bnina},
+  title={AeroTrack: Adaptive-Compute Visual Tracking
+for Counter-UAV Swarm Sensing},
+  author={Ayoub Bnina, Chadlia Jerad},
   year={2026},
   note={Preprint forthcoming. Link will be added upon publication.}
 }
