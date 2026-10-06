@@ -12,7 +12,14 @@ def parse_sot_bounding_box(line_data: str) -> list:
         return None
     return [float(coordinate_parts[0]), float(coordinate_parts[1]), float(coordinate_parts[2]), float(coordinate_parts[3])]
 
-def reformat_and_generate_pipeline(dataset_root: str, source_img_dir_name: str, source_gt_dir_name: str, target_dir_name: str = "test", num_sequences: int = 5):
+def reformat_and_generate_pipeline(
+    dataset_root: str,
+    source_img_dir_name: str,
+    source_gt_dir_name: str,
+    target_dir_name: str = "test",
+    num_sequences: int = 5,
+    seed: int = 42,
+):
     """
     Step 1: Reformats a random selection of sequences into the strict MOT format.
     """
@@ -33,7 +40,7 @@ def reformat_and_generate_pipeline(dataset_root: str, source_img_dir_name: str, 
     # --- NEW: Randomly select the sequences ---
     # We use min() just in case num_sequences is larger than the total available sequences
     safe_num_sequences = min(num_sequences, len(all_sequences))
-    mini_sequences = sorted(random.sample(all_sequences, safe_num_sequences))
+    mini_sequences = sorted(random.Random(seed).sample(all_sequences, safe_num_sequences))
     
     print(f"🎲 Randomly selected sequences: {mini_sequences}")
     # ------------------------------------------
@@ -77,7 +84,12 @@ def reformat_and_generate_pipeline(dataset_root: str, source_img_dir_name: str, 
         else:
             print(f"⚠️ WARNING: Ground Truth file not found for {seq_name}")
 
-    print("✅ [Step 1] Physical reformatting and GT translation complete.")
+    manifest_path = os.path.join(dataset_root, "annotations", "selected_sequences.json")
+    os.makedirs(os.path.dirname(manifest_path), exist_ok=True)
+    with open(manifest_path, "w", encoding="utf-8") as manifest_file:
+        json.dump({"seed": seed, "num_sequences": safe_num_sequences, "sequences": mini_sequences}, manifest_file, indent=2)
+        manifest_file.write("\n")
+    print(f"✅ [Step 1] Physical reformatting and GT translation complete (seed={seed}).")
     return target_dir, mini_sequences
 
 def generate_dut_coco_format(dataset_root: str, formatted_test_dir: str, output_json_path: str, valid_sequences: list):
@@ -142,6 +154,13 @@ def generate_dut_coco_format(dataset_root: str, formatted_test_dir: str, output_
     print("✅ [Step 2] COCO JSON successfully generated.")
 
 if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Convert a reproducible DUT Anti-UAV subset to MOT format.")
+    parser.add_argument("--seed", type=int, default=42, help="seed used to select sequences")
+    parser.add_argument("--num-sequences", type=int, default=5, help="number of sequences to select")
+    args = parser.parse_args()
+
     DATASET_ROOT = "dataset/DUT Anti-UAV"
     
     # 1. Reformat the files and get the list of the 5 active sequences
@@ -150,7 +169,8 @@ if __name__ == '__main__':
         source_img_dir_name="Anti-UAV-Tracking-V0",
         source_gt_dir_name="Anti-UAV-Tracking-V0GT",
         target_dir_name="test",
-        num_sequences=7
+        num_sequences=args.num_sequences,
+        seed=args.seed,
     )
     
     # 2. Build the JSON using ONLY those randomized sequences

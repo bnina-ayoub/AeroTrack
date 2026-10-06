@@ -5,11 +5,17 @@
 # ==============================================================================
 
 # 1. Variables de configuration (À ajuster selon ton projet)
-EXP_FILE="exps/aerotrack_proposed.py"
+EXP_FILE="exps/dut_anti_uav.py"
 CKPT_FILE="early_exit_weights.pth" # <-- Remplace ceci par le chemin exact de tes poids
+DUT_SEED=42
+DUT_SEQUENCES=5
+
+~/AeroTrack/venv/bin/python tools/format_dut_dataset.py \
+    --seed "$DUT_SEED" \
+    --num-sequences "$DUT_SEQUENCES"
 
 echo "========================================================================"
-echo "🚀 Lancement des 4 expériences d'évaluation automatisées"
+echo "🚀 Lancement des 4 expériences sur $DUT_SEQUENCES DUT sequences (seed=$DUT_SEED)"
 echo "========================================================================"
 
 # 2. Définition des paramètres à tester

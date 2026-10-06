@@ -154,6 +154,31 @@ chmod +x run_evaluation.sh
 ./run_evaluation.sh
 ```
 
+### DUT Anti-UAV evaluation
+
+The evaluation script can regenerate a deterministic five-sequence subset of the DUT
+Anti-UAV dataset and then run all four IoU/NWD and baseline/Early Exit combinations:
+
+```bash
+./run_evaluation.sh
+```
+
+The default seed is `42`. The selected sequences are written to
+`dataset/DUT Anti-UAV/annotations/selected_sequences.json`, so the exact subset can
+be reused. To generate another reproducible subset:
+
+```bash
+python tools/format_dut_dataset.py --seed 42 --num-sequences 5
+python tools/track.py \
+  -f exps/dut_anti_uav.py \
+  -c /absolute/path/to/early_exit_weights.pth \
+  -d 1 -b 1 --tracker bytetrack --distance nwd --early_exit
+```
+
+The converted DUT data follows the same MOT-style layout as UAVSwarm:
+`test/<sequence>/img1/*.jpg`, `test/<sequence>/gt/gt.txt`, and
+`annotations/test.json`.
+
 ---
 
 ## TensorRT Edge Path (Optional)
