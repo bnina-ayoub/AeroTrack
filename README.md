@@ -117,10 +117,33 @@ python tools/track.py \
   -c /absolute/path/to/early_exit_weights.pth \
   -d 1 -b 1 \
   --fp16 --fuse \
+  --tracker bytetrack \
   --distance nwd \
   --early_exit \
   --save_vis
 ```
+
+`--tracker` selects the tracking implementation. Available values are:
+
+- `bytetrack` (default): ByteTrack with the selected `--distance` metric.
+- `sort`: SORT.
+- `deepsort`: DeepSORT; provide ReID weights with `--reid-weights`.
+- `motdt`: MOTDT; provide ReID weights with `--reid-weights`.
+
+Examples:
+
+```bash
+# SORT with IoU matching
+python tools/track.py -f exps/aerotrack_proposed.py -c /absolute/path/to/weights.pth \
+  -d 1 -b 1 --tracker sort --distance iou
+
+# DeepSORT with ReID weights
+python tools/track.py -f exps/aerotrack_proposed.py -c /absolute/path/to/weights.pth \
+  -d 1 -b 1 --tracker deepsort --reid-weights weights/pretrained/ckpt.t7
+```
+
+The selected tracker is included in the output directory name:
+`YOLOX_outputs/<experiment>_<tracker>_<mode>_<distance>/`.
 
 ### Baseline vs AeroTrack comparisons
 

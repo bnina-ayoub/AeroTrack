@@ -83,6 +83,19 @@ def make_parser():
     parser.add_argument("--min-box-area", type=float, default=50, help='filter out tiny boxes')
     parser.add_argument("--mot20", dest="mot20", default=False, action="store_true", help="test mot20.")
     parser.add_argument("--distance", type=str, default="nwd", choices=["nwd", "iou"], help="distance metric for tracking")
+    parser.add_argument(
+        "--tracker",
+        type=str,
+        default="bytetrack",
+        choices=["bytetrack", "sort", "deepsort", "motdt"],
+        help="tracking algorithm",
+    )
+    parser.add_argument(
+        "--reid-weights",
+        type=str,
+        default="weights/pretrained/ckpt.t7",
+        help="ReID weights used by DeepSORT and MOTDT",
+    )
     parser.add_argument("--save_vis", dest="save_vis", default=False, action="store_true", help="save per-frame tracking visualizations")
     parser.add_argument("--vis_output", type=str, default=None, help="output directory for visualized tracking frames")
     parser.add_argument("--vis_video", dest="vis_video", default=False, action="store_true", help="also export one mp4 per sequence")
@@ -316,7 +329,7 @@ def main(exp, args, num_gpu):
     if not hasattr(args, 'distance') or args.distance == 'nwd':
         if hasattr(exp, 'distance'): args.distance = exp.distance
     mode_name = "early_exit" if args.early_exit else "baseline"
-    args.experiment_name = f"{args.experiment_name}_{mode_name}_{args.distance}"
+    args.experiment_name = f"{args.experiment_name}_{args.tracker}_{mode_name}_{args.distance}"
     is_distributed = num_gpu > 1
     cudnn.benchmark = True
     rank = args.local_rank
@@ -423,10 +436,28 @@ def main(exp, args, num_gpu):
         energy_monitor.start()
         
     t0 = time()
+    evaluation_method = {
+        "bytetrack": evaluator.evaluate,
+        "sort": evaluator.evaluate_sort,
+        "deepsort": evaluator.evaluate_deepsort,
+        "motdt": evaluator.evaluate_motdt,
+    }[args.tracker]
+    evaluation_kwargs = {
+        "model": model,
+        "distributed": is_distributed,
+        "half": args.fp16,
+        "trt_file": trt_file,
+        "decoder": decoder,
+        "test_size": exp.test_size,
+        "result_folder": results_folder,
+    }
+    if args.tracker in {"deepsort", "motdt"}:
+        evaluation_kwargs["model_folder"] = args.reid_weights
+
     try:
         # NEW: Wrap the evaluation in strict inference mode to eliminate PyTorch overhead
         with torch.inference_mode():
-            *_, summary_coco = evaluator.evaluate(model, is_distributed, args.fp16, trt_file, decoder, exp.test_size, results_folder)
+            *_, summary_coco = evaluation_method(**evaluation_kwargs)
     finally:
         energy_summary = energy_monitor.stop() if energy_monitor is not None else None
     t1 = time()
