@@ -38,8 +38,8 @@ def make_parser():
     parser.add_argument(
         "--epochs",
         type=int,
-        default=None,
-        help="total number of training epochs (defaults to the experiment setting)",
+        default=65,
+        help="total number of training epochs (50 main + 15 no-augmentation tail)",
     )
     parser.add_argument(
         "-d", "--devices", default=None, type=int, help="device for training"
