@@ -69,6 +69,7 @@ def make_parser():
     parser.add_argument("--fp16", dest="fp16", default=False, action="store_true", help="Adopting mix precision evaluating.")
     parser.add_argument("--fuse", dest="fuse", default=False, action="store_true", help="Fuse conv and bn for testing.")
     parser.add_argument("--trt", dest="trt", default=False, action="store_true", help="Using TensorRT model for testing.")
+    parser.add_argument("--torchscript", dest="torchscript", default=False, action="store_true", help="Compile the PyTorch model with TorchScript before testing.")
     parser.add_argument("--test", dest="test", default=False, action="store_true", help="Evaluating on test-dev set.")
     parser.add_argument("--speed", dest="speed", default=False, action="store_true", help="speed test only.")
     parser.add_argument("opts", help="Modify config options using the command-line", default=None, nargs=argparse.REMAINDER)
@@ -418,14 +419,15 @@ def main(exp, args, num_gpu):
     if is_distributed: model = DDP(model, device_ids=[rank])
     if args.fuse and not args.trt: model = fuse_model(model)
     if args.fp16 and not args.trt: model = model.half()
-    # NEW: Attempt to compile the model into a C++ representation with TorchScript
-    if not args.trt:
+    if args.torchscript and args.trt:
+        raise ValueError("--torchscript cannot be used together with --trt.")
+    if args.torchscript:
         logger.info("Attempting to compile model with torch.jit.script...")
         try:
             model = torch.jit.script(model)
             logger.info("Successfully compiled with TorchScript! Dynamic routing preserved.")
         except Exception as e:
-            logger.warning(f"TorchScript compilation failed (normal for some architectures). Falling back to native PyTorch. Error: {e}")
+            logger.warning(f"TorchScript compilation failed. Falling back to native PyTorch. Error: {e}")
     torch.cuda.synchronize()
     # ---------------------------------------------------------
     
