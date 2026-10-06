@@ -36,6 +36,12 @@ def make_parser():
     )
     parser.add_argument("-b", "--batch-size", type=int, default=8, help="batch size")
     parser.add_argument(
+        "--epochs",
+        type=int,
+        default=None,
+        help="total number of training epochs (defaults to the experiment setting)",
+    )
+    parser.add_argument(
         "-d", "--devices", default=None, type=int, help="device for training"
     )
     parser.add_argument(
@@ -112,6 +118,15 @@ if __name__ == "__main__":
     args = make_parser().parse_args()
     exp = get_exp(args.exp_file, args.name)
     exp.merge(args.opts)
+    if args.epochs is not None:
+        if args.epochs <= 0:
+            raise ValueError("--epochs must be greater than zero")
+        if args.epochs < exp.no_aug_epochs:
+            raise ValueError(
+                f"--epochs ({args.epochs}) must be at least no_aug_epochs "
+                f"({exp.no_aug_epochs})"
+            )
+        exp.max_epoch = args.epochs
 
     if not args.experiment_name:
         args.experiment_name = exp.exp_name

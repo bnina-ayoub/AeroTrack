@@ -98,8 +98,13 @@ python tools/convert_mot_to_coco.py
 python tools/train.py \
   -f exps/aerotrack_proposed.py \
   -d 1 \
-  -b 16
+  -b 8 \
+  --epochs 65
 ```
+
+The notebook-aligned default is 65 total epochs: 50 epochs with augmentation
+followed by a 15-epoch no-augmentation tail. The experiment config supplies
+these defaults automatically; `--epochs` can be used to override the total.
 
 To resume from checkpoint:
 
