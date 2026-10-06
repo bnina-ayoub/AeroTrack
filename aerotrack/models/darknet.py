@@ -2,6 +2,9 @@
 # -*- encoding: utf-8 -*-
 # Copyright (c) Megvii Inc. All rights reserved.
 
+from typing import Dict
+
+import torch
 from torch import nn
 
 from .network_blocks import BaseConv, CSPLayer, DWConv, Focus, ResLayer, SPPBottleneck
@@ -79,8 +82,8 @@ class Darknet(nn.Module):
         )
         return m
 
-    def forward(self, x):
-        outputs = {}
+    def forward(self, x) -> Dict[str, torch.Tensor]:
+        outputs = torch.jit.annotate(Dict[str, torch.Tensor], {})
         x = self.stem(x)
         outputs["stem"] = x
         x = self.dark2(x)
@@ -91,7 +94,7 @@ class Darknet(nn.Module):
         outputs["dark4"] = x
         x = self.dark5(x)
         outputs["dark5"] = x
-        res = {}
+        res = torch.jit.annotate(Dict[str, torch.Tensor], {})
         for k in self.out_features:
             if k in outputs:
                 res[k] = outputs[k]
@@ -173,8 +176,8 @@ class CSPDarknet(nn.Module):
             ),
         )
 
-    def forward(self, x):
-        outputs = {}
+    def forward(self, x) -> Dict[str, torch.Tensor]:
+        outputs = torch.jit.annotate(Dict[str, torch.Tensor], {})
         x = self.stem(x)
         outputs["stem"] = x
         x = self.dark2(x)
@@ -185,7 +188,7 @@ class CSPDarknet(nn.Module):
         outputs["dark4"] = x
         x = self.dark5(x)
         outputs["dark5"] = x
-        res = {}
+        res = torch.jit.annotate(Dict[str, torch.Tensor], {})
         for k in self.out_features:
             if k in outputs:
                 res[k] = outputs[k]

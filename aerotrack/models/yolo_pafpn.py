@@ -4,6 +4,7 @@
 
 import torch
 import torch.nn as nn
+from typing import Dict
 
 from .darknet import CSPDarknet
 from .network_blocks import BaseConv, CSPLayer, CSPSTRLayer, DWConv
@@ -119,12 +120,14 @@ class YOLOPAFPN(nn.Module):
         out_features = self.backbone(input)
         return self.forward_pafpn_only(out_features)
     
-    def forward_pafpn_only(self, out_features):
+    def forward_pafpn_only(self, out_features: Dict[str, torch.Tensor]):
         """
         New method to run ONLY the PAFPN logic using pre-computed backbone features.
         """
         features = [out_features[f] for f in self.in_features]
-        [x2, x1, x0] = features
+        x2 = features[0]
+        x1 = features[1]
+        x0 = features[2]
 
         fpn_out0 = self.lateral_conv0(x0)  # 1024->512/32
         f_out0 = self.upsample(fpn_out0)  # 512/16
