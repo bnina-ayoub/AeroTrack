@@ -13,6 +13,9 @@ from aerotrack.utils import (
     xyxy2xywh
 )
 from aerotrack.tracker.byte_tracker import BYTETracker
+from aerotrack.tracker.sort_tracker.sort import Sort
+from aerotrack.tracker.deepsort_tracker.deepsort import DeepSort
+from aerotrack.tracker.motdt_tracker.motdt_tracker import OnlineTracker
 
 
 import contextlib
