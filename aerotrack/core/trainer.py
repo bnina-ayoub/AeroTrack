@@ -51,6 +51,7 @@ class Trainer:
         self.data_type = torch.float16 if args.fp16 else torch.float32
         self.input_size = exp.input_size
         self.best_ap = 0
+        self.tail_started = False
 
         # metric record
         self.meter = MeterBuffer(window_size=exp.print_interval)
@@ -110,9 +111,12 @@ class Trainer:
         if self.use_model_ema:
             self.ema_model.update(self.model)
 
-        lr = self.lr_scheduler.update_lr(self.progress_in_iter + 1)
-        for param_group in self.optimizer.param_groups:
-            param_group["lr"] = lr
+        if self.tail_started:
+            lr = self.optimizer.param_groups[0]["lr"]
+        else:
+            lr = self.lr_scheduler.update_lr(self.progress_in_iter + 1)
+            for param_group in self.optimizer.param_groups:
+                param_group["lr"] = lr
 
         iter_end_time = time.time()
         self.meter.update(
@@ -201,6 +205,10 @@ class Trainer:
             self.exp.eval_interval = 1
             if not self.no_aug:
                 self.save_ckpt(ckpt_name="last_mosaic_epoch")
+            if not self.tail_started:
+                for param_group in self.optimizer.param_groups:
+                    param_group["lr"] *= self.exp.tail_lr_factor
+                self.tail_started = True
 
     def after_epoch(self):
         if self.use_model_ema:

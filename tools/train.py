@@ -34,7 +34,7 @@ def make_parser():
         type=str,
         help="url used to set up distributed training",
     )
-    parser.add_argument("-b", "--batch-size", type=int, default=64, help="batch size")
+    parser.add_argument("-b", "--batch-size", type=int, default=8, help="batch size")
     parser.add_argument(
         "-d", "--devices", default=None, type=int, help="device for training"
     )
@@ -44,7 +44,7 @@ def make_parser():
     parser.add_argument(
         "-f",
         "--exp_file",
-        default=None,
+        default="exps/aerotrack_proposed.py",
         type=str,
         help="plz input your expriment description file",
     )
@@ -68,7 +68,7 @@ def make_parser():
     parser.add_argument(
         "--fp16",
         dest="fp16",
-        default=True,
+        default=False,
         action="store_true",
         help="Adopting mix precision training.",
     )

@@ -15,7 +15,21 @@ class UAVSwarmBaseExperiment(YoloXBaseExperiment):
         self.nmsthre = 0.7
         self.data_dir = "dataset/UAVSwarm"
         self.train_ann = "train.json"
-        self.val_ann = "test.json"
+        self.val_ann = "val_half.json"
+        self.data_num_workers = 2
+        self.random_size = None
+        self.max_epoch = 65
+        self.warmup_epochs = 5
+        self.warmup_lr = 0.0
+        self.basic_lr_per_img = 0.01 / 8.0
+        self.scheduler = "warmcos"
+        self.no_aug_epochs = 15
+        self.min_lr_ratio = 0.0
+        self.ema = False
+        self.eval_interval = 1
+        self.mosaic_scale = (0.5, 1.5)
+        self.mixup_scale = (0.5, 1.5)
+        self.tail_lr_factor = 0.03
 
     def configure_batch_normalization(self, module):
         if isinstance(module, nn.BatchNorm2d):
@@ -52,13 +66,25 @@ class UAVSwarmBaseExperiment(YoloXBaseExperiment):
         batch_sampler = YoloBatchSampler(sampler=sampler, batch_size=batch_size, drop_last=False)
         return DataLoader(augmented_dataset, num_workers=self.data_num_workers, pin_memory=True, batch_sampler=batch_sampler)
 
+    def get_optimizer(self, batch_size):
+        import torch
+
+        if "optimizer" not in self.__dict__:
+            self.optimizer = torch.optim.SGD(
+                self.model.parameters(),
+                lr=self.warmup_lr,
+                momentum=self.momentum,
+                weight_decay=self.weight_decay,
+            )
+        return self.optimizer
+
     def get_eval_loader(self, batch_size, is_distributed, testdev=False, legacy=False):
         from aerotrack.data import MOTDataset, ValTransform
         val_dataset = MOTDataset(
             data_dir=self.data_dir,
             json_file=self.val_ann,
             img_size=self.test_size,
-            name="test",
+            name="train",
             preproc=ValTransform(),
         )
         sampler = torch.utils.data.SequentialSampler(val_dataset)
