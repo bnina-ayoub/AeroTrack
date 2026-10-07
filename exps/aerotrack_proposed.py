@@ -7,6 +7,12 @@ class Exp(UAVSwarmBaseExperiment):
         self.exp_name = "aerotrack"
         self.full_network_gflops = 36.14
         self.p3_only_gflops = 13.46
+        self.decision_gate_min_confidence = 0.75
+        self.decision_gate_max_area = 1005.0
+        self.decision_gate_uncertainty_lower = 0.25
+        self.decision_gate_uncertainty_upper = 0.30
+        self.empty_sky_threshold = 0.20
+        self.early_exit_layer = "dark3"
 
     def get_model(self):
         from aerotrack.models.yolo_pafpn import YOLOPAFPN
@@ -33,12 +39,12 @@ class Exp(UAVSwarmBaseExperiment):
             self.model = YOLOX(
                 backbone=backbone,
                 head=head,
-                decision_gate_min_confidence=0.75,
-                decision_gate_max_area=1005.0,
-                decision_gate_uncertainty_lower=0.25,
-                decision_gate_uncertainty_upper=0.30,
-                empty_sky_threshold=0.20,
-                early_exit_layer="dark3",
+                decision_gate_min_confidence=self.decision_gate_min_confidence,
+                decision_gate_max_area=self.decision_gate_max_area,
+                decision_gate_uncertainty_lower=self.decision_gate_uncertainty_lower,
+                decision_gate_uncertainty_upper=self.decision_gate_uncertainty_upper,
+                empty_sky_threshold=self.empty_sky_threshold,
+                early_exit_layer=self.early_exit_layer,
                 early_exit_enabled = getattr(self, "early_exit_enabled", False),
             )
         

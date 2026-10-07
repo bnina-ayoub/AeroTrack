@@ -10,6 +10,12 @@ class Exp(AeroTrackExperiment):
         self.train_ann = "test.json"
         self.val_ann = "test.json"
         self.data_num_workers = 2
+        # Override these experiment attributes to tune DUT early-exit routing.
+        self.decision_gate_min_confidence = 0.75
+        self.decision_gate_max_area = 1005.0
+        self.decision_gate_uncertainty_lower = 0.25
+        self.decision_gate_uncertainty_upper = 0.30
+        self.empty_sky_threshold = 0.20
 
     def get_eval_loader(self, batch_size, is_distributed, testdev=False, legacy=False):
         from aerotrack.data import MOTDataset, ValTransform
