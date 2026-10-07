@@ -27,7 +27,7 @@ def reformat_and_generate_pipeline(
     source_gt_dir = os.path.join(dataset_root, source_gt_dir_name)
     target_dir = os.path.join(dataset_root, target_dir_name)
 
-    print(f"🚀 [Step 1] Formatting {num_sequences} RANDOM sequences for evaluation...")
+    print(f"[Step 1] Formatting {num_sequences} RANDOM sequences for evaluation...")
     
     # Clean up the old 'test' folder to avoid mixing old and new sequences
     if os.path.exists(target_dir):
@@ -96,7 +96,7 @@ def generate_dut_coco_format(dataset_root: str, formatted_test_dir: str, output_
     """
     Step 2: Generates the COCO JSON for the selected sequences.
     """
-    print(f"🚀 [Step 2] Generating COCO JSON for the selected sequences...")
+    print(f"[Step 2] Generating COCO JSON for the selected sequences...")
     
     # Delete the old JSON file to prevent data pollution
     if os.path.exists(output_json_path):
