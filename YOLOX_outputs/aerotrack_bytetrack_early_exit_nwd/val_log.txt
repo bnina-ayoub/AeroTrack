@@ -1,0 +1,447 @@
+2026-10-16 20:46:18.319 | INFO     | __main__:main:345 - Args: Namespace(experiment_name='aerotrack_bytetrack_early_exit_nwd', name=None, dist_backend='nccl', dist_url=None, batch_size=1, devices=1, local_rank=0, num_machines=1, machine_rank=0, exp_file='exps/aerotrack_proposed.py', fp16=True, fuse=True, trt=True, torchscript=False, test=False, speed=False, opts=[], ckpt=None, conf=0.01, nms=0.69, tsize=640, seed=None, track_thresh=0.6, track_buffer=50, match_thresh=0.97, min_box_area=50, mot20=False, distance='nwd', tracker='bytetrack', reid_weights='weights/pretrained/ckpt.t7', save_vis=False, vis_output=None, vis_video=False, vis_fps=30, early_exit=True, monitor_energy=True)
+2026-10-16 20:46:18.827 | INFO     | __main__:main:354 - Model Summary: Params: 10.70M, FLOPs: 18.02G
+2026-10-16 20:46:18.889 | INFO     | __main__:ensure_coco_json_exists:152 - Fichier JSON valide trouvé : dataset/UAVSwarm/annotations/test.json
+2026-10-16 20:46:18.893 | INFO     | aerotrack.data.datasets.mot:__init__:41 - DEBUG: Chemin complet du fichier JSON chargé : dataset/UAVSwarm/annotations/test.json
+2026-10-16 20:46:18.893 | INFO     | aerotrack.data.datasets.mot:__init__:42 - DEBUG: Le fichier existe ? True
+2026-10-16 20:46:18.894 | INFO     | aerotrack.data.datasets.mot:__init__:43 - DEBUG: Taille du fichier : 6452593 octets
+2026-10-16 20:46:18.894 | INFO     | aerotrack.data.datasets.mot:__init__:45 - loading annotations into memory...
+2026-10-16 20:46:19.063 | INFO     | aerotrack.data.datasets.mot:__init__:45 - Done (t=0.17s)
+2026-10-16 20:46:19.063 | INFO     | pycocotools.coco:__init__:86 - creating index...
+2026-10-16 20:46:19.071 | INFO     | pycocotools.coco:__init__:86 - index created!
+2026-10-16 20:46:19.299 | INFO     | __main__:main:374 - ⚡ Loading Hardware-Accelerated Dynamic Routing Engine...
+2026-10-16 20:46:19.404 | INFO     | __main__:main:434 - ⏱️ Starting performance timer...
+2026-10-16 20:47:16.504 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-02.txt
+2026-10-16 20:47:16.541 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-04.txt
+2026-10-16 20:47:16.577 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-06.txt
+2026-10-16 20:47:16.587 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-08.txt
+2026-10-16 20:47:16.602 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-10.txt
+2026-10-16 20:47:16.608 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-12.txt
+2026-10-16 20:47:16.642 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-14.txt
+2026-10-16 20:47:16.668 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-16.txt
+2026-10-16 20:47:16.672 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-18.txt
+2026-10-16 20:47:16.674 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-20.txt
+2026-10-16 20:47:16.677 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-22.txt
+2026-10-16 20:47:16.678 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-24.txt
+2026-10-16 20:47:16.680 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-26.txt
+2026-10-16 20:47:16.695 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-28.txt
+2026-10-16 20:47:16.702 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-30.txt
+2026-10-16 20:47:16.708 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-32.txt
+2026-10-16 20:47:16.710 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-34.txt
+2026-10-16 20:47:16.718 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-36.txt
+2026-10-16 20:47:16.720 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-38.txt
+2026-10-16 20:47:16.744 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-40.txt
+2026-10-16 20:47:16.795 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-42.txt
+2026-10-16 20:47:16.800 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-44.txt
+2026-10-16 20:47:16.820 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-46.txt
+2026-10-16 20:47:16.845 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-48.txt
+2026-10-16 20:47:16.855 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-50.txt
+2026-10-16 20:47:16.882 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-52.txt
+2026-10-16 20:47:16.889 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-54.txt
+2026-10-16 20:47:16.899 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-56.txt
+2026-10-16 20:47:16.903 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-58.txt
+2026-10-16 20:47:16.914 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-60.txt
+2026-10-16 20:47:16.918 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-62.txt
+2026-10-16 20:47:16.925 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-64.txt
+2026-10-16 20:47:16.931 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-66.txt
+2026-10-16 20:47:16.934 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-68.txt
+2026-10-16 20:47:16.939 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-70.txt
+2026-10-16 20:47:16.949 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-72.txt
+2026-10-16 20:47:16.968 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-02_branch.csv
+2026-10-16 20:47:16.969 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-04_branch.csv
+2026-10-16 20:47:16.969 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-06_branch.csv
+2026-10-16 20:47:16.969 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-08_branch.csv
+2026-10-16 20:47:16.969 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-10_branch.csv
+2026-10-16 20:47:16.969 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-12_branch.csv
+2026-10-16 20:47:16.969 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-14_branch.csv
+2026-10-16 20:47:16.970 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-16_branch.csv
+2026-10-16 20:47:16.970 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-18_branch.csv
+2026-10-16 20:47:16.970 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-20_branch.csv
+2026-10-16 20:47:16.970 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-22_branch.csv
+2026-10-16 20:47:16.970 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-24_branch.csv
+2026-10-16 20:47:16.970 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-26_branch.csv
+2026-10-16 20:47:16.970 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-28_branch.csv
+2026-10-16 20:47:16.971 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-30_branch.csv
+2026-10-16 20:47:16.971 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-32_branch.csv
+2026-10-16 20:47:16.971 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-34_branch.csv
+2026-10-16 20:47:16.971 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-36_branch.csv
+2026-10-16 20:47:16.971 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-38_branch.csv
+2026-10-16 20:47:16.971 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-40_branch.csv
+2026-10-16 20:47:16.972 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-42_branch.csv
+2026-10-16 20:47:16.972 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-44_branch.csv
+2026-10-16 20:47:16.972 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-46_branch.csv
+2026-10-16 20:47:16.972 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-48_branch.csv
+2026-10-16 20:47:16.972 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-50_branch.csv
+2026-10-16 20:47:16.972 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-52_branch.csv
+2026-10-16 20:47:16.972 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-54_branch.csv
+2026-10-16 20:47:16.973 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-56_branch.csv
+2026-10-16 20:47:16.973 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-58_branch.csv
+2026-10-16 20:47:16.973 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-60_branch.csv
+2026-10-16 20:47:16.973 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-62_branch.csv
+2026-10-16 20:47:16.973 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-64_branch.csv
+2026-10-16 20:47:16.973 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-66_branch.csv
+2026-10-16 20:47:16.973 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-68_branch.csv
+2026-10-16 20:47:16.974 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-70_branch.csv
+2026-10-16 20:47:16.974 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-72_branch.csv
+2026-10-16 20:47:16.978 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate_prediction:697 - DEBUG: Nombre total d'annotations trouvées dans le JSON : 37947
+2026-10-16 20:47:16.978 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate_prediction:702 - Evaluate in main process...
+2026-10-16 20:47:16.978 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate_prediction:703 - Nombre total de détections collectées : 51446
+2026-10-16 20:47:17.334 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate_prediction:733 - Loading and preparing results...
+2026-10-16 20:47:17.441 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate_prediction:733 - DONE (t=0.11s)
+2026-10-16 20:47:17.441 | INFO     | pycocotools.coco:loadRes:367 - creating index...
+2026-10-16 20:47:17.635 | INFO     | pycocotools.coco:loadRes:367 - index created!
+2026-10-16 20:47:18.101 | INFO     | __main__:main:504 - 
+Average forward time: 6.32 ms, Average track time: 1.21 ms, Average inference time: 7.52 ms
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.422
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.878
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.352
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.411
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.493
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.316
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.089
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.423
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.497
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.487
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.559
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.325
+
+2026-10-16 20:47:18.102 | INFO     | __main__:main:520 - early exits 3/156 (1.9%) for UAVSwarm-02
+2026-10-16 20:47:18.102 | INFO     | __main__:main:520 - early exits 4/161 (2.5%) for UAVSwarm-04
+2026-10-16 20:47:18.102 | INFO     | __main__:main:520 - early exits 0/76 (0.0%) for UAVSwarm-06
+2026-10-16 20:47:18.102 | INFO     | __main__:main:520 - early exits 0/115 (0.0%) for UAVSwarm-08
+2026-10-16 20:47:18.102 | INFO     | __main__:main:520 - early exits 28/58 (48.3%) for UAVSwarm-10
+2026-10-16 20:47:18.102 | INFO     | __main__:main:520 - early exits 10/116 (8.6%) for UAVSwarm-12
+2026-10-16 20:47:18.102 | INFO     | __main__:main:520 - early exits 14/115 (12.2%) for UAVSwarm-14
+2026-10-16 20:47:18.102 | INFO     | __main__:main:520 - early exits 7/65 (10.8%) for UAVSwarm-16
+2026-10-16 20:47:18.102 | INFO     | __main__:main:520 - early exits 4/84 (4.8%) for UAVSwarm-18
+2026-10-16 20:47:18.102 | INFO     | __main__:main:520 - early exits 18/62 (29.0%) for UAVSwarm-20
+2026-10-16 20:47:18.102 | INFO     | __main__:main:520 - early exits 36/72 (50.0%) for UAVSwarm-22
+2026-10-16 20:47:18.102 | INFO     | __main__:main:520 - early exits 14/72 (19.4%) for UAVSwarm-24
+2026-10-16 20:47:18.102 | INFO     | __main__:main:520 - early exits 16/126 (12.7%) for UAVSwarm-26
+2026-10-16 20:47:18.103 | INFO     | __main__:main:520 - early exits 9/131 (6.9%) for UAVSwarm-28
+2026-10-16 20:47:18.103 | INFO     | __main__:main:520 - early exits 23/105 (21.9%) for UAVSwarm-30
+2026-10-16 20:47:18.103 | INFO     | __main__:main:520 - early exits 0/76 (0.0%) for UAVSwarm-32
+2026-10-16 20:47:18.103 | INFO     | __main__:main:520 - early exits 0/176 (0.0%) for UAVSwarm-34
+2026-10-16 20:47:18.103 | INFO     | __main__:main:520 - early exits 0/81 (0.0%) for UAVSwarm-36
+2026-10-16 20:47:18.103 | INFO     | __main__:main:520 - early exits 340/452 (75.2%) for UAVSwarm-38
+2026-10-16 20:47:18.103 | INFO     | __main__:main:520 - early exits 165/448 (36.8%) for UAVSwarm-40
+2026-10-16 20:47:18.103 | INFO     | __main__:main:520 - early exits 2/120 (1.7%) for UAVSwarm-42
+2026-10-16 20:47:18.103 | INFO     | __main__:main:520 - early exits 195/353 (55.2%) for UAVSwarm-44
+2026-10-16 20:47:18.103 | INFO     | __main__:main:520 - early exits 31/238 (13.0%) for UAVSwarm-46
+2026-10-16 20:47:18.103 | INFO     | __main__:main:520 - early exits 155/221 (70.1%) for UAVSwarm-48
+2026-10-16 20:47:18.103 | INFO     | __main__:main:520 - early exits 56/170 (32.9%) for UAVSwarm-50
+2026-10-16 20:47:18.103 | INFO     | __main__:main:520 - early exits 59/157 (37.6%) for UAVSwarm-52
+2026-10-16 20:47:18.103 | INFO     | __main__:main:520 - early exits 45/110 (40.9%) for UAVSwarm-54
+2026-10-16 20:47:18.103 | INFO     | __main__:main:520 - early exits 17/89 (19.1%) for UAVSwarm-56
+2026-10-16 20:47:18.104 | INFO     | __main__:main:520 - early exits 44/122 (36.1%) for UAVSwarm-58
+2026-10-16 20:47:18.104 | INFO     | __main__:main:520 - early exits 39/68 (57.4%) for UAVSwarm-60
+2026-10-16 20:47:18.104 | INFO     | __main__:main:520 - early exits 80/140 (57.1%) for UAVSwarm-62
+2026-10-16 20:47:18.104 | INFO     | __main__:main:520 - early exits 40/75 (53.3%) for UAVSwarm-64
+2026-10-16 20:47:18.104 | INFO     | __main__:main:520 - early exits 46/73 (63.0%) for UAVSwarm-66
+2026-10-16 20:47:18.104 | INFO     | __main__:main:520 - early exits 0/59 (0.0%) for UAVSwarm-68
+2026-10-16 20:47:18.104 | INFO     | __main__:main:520 - early exits 71/307 (23.1%) for UAVSwarm-70
+2026-10-16 20:47:18.104 | INFO     | __main__:main:520 - early exits 199/705 (28.2%) for UAVSwarm-72
+2026-10-16 20:47:18.104 | INFO     | __main__:main:528 - early exits 1770/5754 (30.8%) | Effective GFLOPs: 29.16 | GFLOPs reduction: 19.30%
+2026-10-16 20:47:18.105 | INFO     | __main__:main:537 - Frame latency extremes | best: UAVSwarm-38 frame 311 (3.01 ms, 332.62 FPS) | worst: UAVSwarm-02 frame 57 (14.90 ms, 67.12 FPS)
+2026-10-16 20:47:18.580 | INFO     | __main__:compare_dataframes:112 - Comparing groundtruth and test dataframes.
+2026-10-16 20:47:20.184 | INFO     | __main__:main:560 - Running metrics
+2026-10-16 20:47:20.928 | INFO     | __main__:main:597 - ⚡ Energy Stats | Total: 1828.59 J | Per Frame: 363.32 mJ | Avg Power: 31.32 W
+2026-10-16 20:47:20.944 | INFO     | __main__:main:626 - Final Clean Latency: 7.89 ms/img | Clean FPS: 126.78
+2026-10-16 20:47:20.944 | INFO     | __main__:main:627 - Completed
+2026-10-16 21:07:50.840 | INFO     | __main__:main:345 - Args: Namespace(experiment_name='aerotrack_bytetrack_early_exit_nwd', name=None, dist_backend='nccl', dist_url=None, batch_size=1, devices=1, local_rank=0, num_machines=1, machine_rank=0, exp_file='exps/aerotrack_proposed.py', fp16=True, fuse=True, trt=True, torchscript=False, test=False, speed=False, opts=[], ckpt=None, conf=0.01, nms=0.69, tsize=640, seed=None, track_thresh=0.6, track_buffer=50, match_thresh=0.97, min_box_area=50, mot20=False, distance='nwd', tracker='bytetrack', reid_weights='weights/pretrained/ckpt.t7', save_vis=False, vis_output=None, vis_video=False, vis_fps=30, early_exit=True, monitor_energy=True)
+2026-10-16 21:07:51.301 | INFO     | __main__:main:354 - Model Summary: Params: 10.70M, FLOPs: 18.02G
+2026-10-16 21:07:51.358 | INFO     | __main__:ensure_coco_json_exists:152 - Fichier JSON valide trouvé : dataset/UAVSwarm/annotations/test.json
+2026-10-16 21:07:51.363 | INFO     | aerotrack.data.datasets.mot:__init__:41 - DEBUG: Chemin complet du fichier JSON chargé : dataset/UAVSwarm/annotations/test.json
+2026-10-16 21:07:51.363 | INFO     | aerotrack.data.datasets.mot:__init__:42 - DEBUG: Le fichier existe ? True
+2026-10-16 21:07:51.364 | INFO     | aerotrack.data.datasets.mot:__init__:43 - DEBUG: Taille du fichier : 6452593 octets
+2026-10-16 21:07:51.364 | INFO     | aerotrack.data.datasets.mot:__init__:45 - loading annotations into memory...
+2026-10-16 21:07:51.424 | INFO     | aerotrack.data.datasets.mot:__init__:45 - Done (t=0.06s)
+2026-10-16 21:07:51.424 | INFO     | pycocotools.coco:__init__:86 - creating index...
+2026-10-16 21:07:51.542 | INFO     | pycocotools.coco:__init__:86 - index created!
+2026-10-16 21:07:51.800 | INFO     | __main__:main:374 - ⚡ Loading Hardware-Accelerated Dynamic Routing Engine...
+2026-10-16 21:07:51.907 | INFO     | __main__:main:434 - ⏱️ Starting performance timer...
+2026-10-16 21:08:48.649 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-02.txt
+2026-10-16 21:08:48.688 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-04.txt
+2026-10-16 21:08:48.724 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-06.txt
+2026-10-16 21:08:48.736 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-08.txt
+2026-10-16 21:08:48.751 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-10.txt
+2026-10-16 21:08:48.758 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-12.txt
+2026-10-16 21:08:48.792 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-14.txt
+2026-10-16 21:08:48.819 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-16.txt
+2026-10-16 21:08:48.822 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-18.txt
+2026-10-16 21:08:48.825 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-20.txt
+2026-10-16 21:08:48.828 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-22.txt
+2026-10-16 21:08:48.829 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-24.txt
+2026-10-16 21:08:48.831 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-26.txt
+2026-10-16 21:08:48.846 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-28.txt
+2026-10-16 21:08:48.853 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-30.txt
+2026-10-16 21:08:48.860 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-32.txt
+2026-10-16 21:08:48.862 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-34.txt
+2026-10-16 21:08:48.870 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-36.txt
+2026-10-16 21:08:48.872 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-38.txt
+2026-10-16 21:08:48.896 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-40.txt
+2026-10-16 21:08:48.948 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-42.txt
+2026-10-16 21:08:48.954 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-44.txt
+2026-10-16 21:08:48.973 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-46.txt
+2026-10-16 21:08:48.999 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-48.txt
+2026-10-16 21:08:49.009 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-50.txt
+2026-10-16 21:08:49.036 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-52.txt
+2026-10-16 21:08:49.044 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-54.txt
+2026-10-16 21:08:49.053 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-56.txt
+2026-10-16 21:08:49.058 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-58.txt
+2026-10-16 21:08:49.068 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-60.txt
+2026-10-16 21:08:49.073 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-62.txt
+2026-10-16 21:08:49.080 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-64.txt
+2026-10-16 21:08:49.086 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-66.txt
+2026-10-16 21:08:49.089 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-68.txt
+2026-10-16 21:08:49.095 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-70.txt
+2026-10-16 21:08:49.104 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-72.txt
+2026-10-16 21:08:49.124 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-02_branch.csv
+2026-10-16 21:08:49.125 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-04_branch.csv
+2026-10-16 21:08:49.125 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-06_branch.csv
+2026-10-16 21:08:49.125 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-08_branch.csv
+2026-10-16 21:08:49.125 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-10_branch.csv
+2026-10-16 21:08:49.125 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-12_branch.csv
+2026-10-16 21:08:49.126 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-14_branch.csv
+2026-10-16 21:08:49.126 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-16_branch.csv
+2026-10-16 21:08:49.126 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-18_branch.csv
+2026-10-16 21:08:49.126 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-20_branch.csv
+2026-10-16 21:08:49.126 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-22_branch.csv
+2026-10-16 21:08:49.126 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-24_branch.csv
+2026-10-16 21:08:49.126 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-26_branch.csv
+2026-10-16 21:08:49.127 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-28_branch.csv
+2026-10-16 21:08:49.127 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-30_branch.csv
+2026-10-16 21:08:49.127 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-32_branch.csv
+2026-10-16 21:08:49.127 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-34_branch.csv
+2026-10-16 21:08:49.127 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-36_branch.csv
+2026-10-16 21:08:49.127 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-38_branch.csv
+2026-10-16 21:08:49.128 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-40_branch.csv
+2026-10-16 21:08:49.128 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-42_branch.csv
+2026-10-16 21:08:49.128 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-44_branch.csv
+2026-10-16 21:08:49.128 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-46_branch.csv
+2026-10-16 21:08:49.128 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-48_branch.csv
+2026-10-16 21:08:49.128 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-50_branch.csv
+2026-10-16 21:08:49.129 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-52_branch.csv
+2026-10-16 21:08:49.129 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-54_branch.csv
+2026-10-16 21:08:49.129 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-56_branch.csv
+2026-10-16 21:08:49.129 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-58_branch.csv
+2026-10-16 21:08:49.129 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-60_branch.csv
+2026-10-16 21:08:49.129 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-62_branch.csv
+2026-10-16 21:08:49.129 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-64_branch.csv
+2026-10-16 21:08:49.130 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-66_branch.csv
+2026-10-16 21:08:49.130 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-68_branch.csv
+2026-10-16 21:08:49.130 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-70_branch.csv
+2026-10-16 21:08:49.130 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-72_branch.csv
+2026-10-16 21:08:49.134 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate_prediction:697 - DEBUG: Nombre total d'annotations trouvées dans le JSON : 37947
+2026-10-16 21:08:49.134 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate_prediction:702 - Evaluate in main process...
+2026-10-16 21:08:49.134 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate_prediction:703 - Nombre total de détections collectées : 51446
+2026-10-16 21:08:49.482 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate_prediction:733 - Loading and preparing results...
+2026-10-16 21:08:49.590 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate_prediction:733 - DONE (t=0.11s)
+2026-10-16 21:08:49.590 | INFO     | pycocotools.coco:loadRes:367 - creating index...
+2026-10-16 21:08:49.785 | INFO     | pycocotools.coco:loadRes:367 - index created!
+2026-10-16 21:08:50.256 | INFO     | __main__:main:504 - 
+Average forward time: 6.28 ms, Average track time: 1.20 ms, Average inference time: 7.48 ms
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.422
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.878
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.352
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.411
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.493
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.316
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.089
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.423
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.497
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.487
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.559
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.325
+
+2026-10-16 21:08:50.257 | INFO     | __main__:main:520 - early exits 3/156 (1.9%) for UAVSwarm-02
+2026-10-16 21:08:50.257 | INFO     | __main__:main:520 - early exits 4/161 (2.5%) for UAVSwarm-04
+2026-10-16 21:08:50.257 | INFO     | __main__:main:520 - early exits 0/76 (0.0%) for UAVSwarm-06
+2026-10-16 21:08:50.257 | INFO     | __main__:main:520 - early exits 0/115 (0.0%) for UAVSwarm-08
+2026-10-16 21:08:50.257 | INFO     | __main__:main:520 - early exits 28/58 (48.3%) for UAVSwarm-10
+2026-10-16 21:08:50.257 | INFO     | __main__:main:520 - early exits 10/116 (8.6%) for UAVSwarm-12
+2026-10-16 21:08:50.257 | INFO     | __main__:main:520 - early exits 14/115 (12.2%) for UAVSwarm-14
+2026-10-16 21:08:50.257 | INFO     | __main__:main:520 - early exits 7/65 (10.8%) for UAVSwarm-16
+2026-10-16 21:08:50.257 | INFO     | __main__:main:520 - early exits 4/84 (4.8%) for UAVSwarm-18
+2026-10-16 21:08:50.258 | INFO     | __main__:main:520 - early exits 18/62 (29.0%) for UAVSwarm-20
+2026-10-16 21:08:50.258 | INFO     | __main__:main:520 - early exits 36/72 (50.0%) for UAVSwarm-22
+2026-10-16 21:08:50.258 | INFO     | __main__:main:520 - early exits 14/72 (19.4%) for UAVSwarm-24
+2026-10-16 21:08:50.258 | INFO     | __main__:main:520 - early exits 16/126 (12.7%) for UAVSwarm-26
+2026-10-16 21:08:50.258 | INFO     | __main__:main:520 - early exits 9/131 (6.9%) for UAVSwarm-28
+2026-10-16 21:08:50.258 | INFO     | __main__:main:520 - early exits 23/105 (21.9%) for UAVSwarm-30
+2026-10-16 21:08:50.258 | INFO     | __main__:main:520 - early exits 0/76 (0.0%) for UAVSwarm-32
+2026-10-16 21:08:50.258 | INFO     | __main__:main:520 - early exits 0/176 (0.0%) for UAVSwarm-34
+2026-10-16 21:08:50.258 | INFO     | __main__:main:520 - early exits 0/81 (0.0%) for UAVSwarm-36
+2026-10-16 21:08:50.258 | INFO     | __main__:main:520 - early exits 340/452 (75.2%) for UAVSwarm-38
+2026-10-16 21:08:50.258 | INFO     | __main__:main:520 - early exits 165/448 (36.8%) for UAVSwarm-40
+2026-10-16 21:08:50.258 | INFO     | __main__:main:520 - early exits 2/120 (1.7%) for UAVSwarm-42
+2026-10-16 21:08:50.258 | INFO     | __main__:main:520 - early exits 195/353 (55.2%) for UAVSwarm-44
+2026-10-16 21:08:50.259 | INFO     | __main__:main:520 - early exits 31/238 (13.0%) for UAVSwarm-46
+2026-10-16 21:08:50.259 | INFO     | __main__:main:520 - early exits 155/221 (70.1%) for UAVSwarm-48
+2026-10-16 21:08:50.259 | INFO     | __main__:main:520 - early exits 56/170 (32.9%) for UAVSwarm-50
+2026-10-16 21:08:50.259 | INFO     | __main__:main:520 - early exits 59/157 (37.6%) for UAVSwarm-52
+2026-10-16 21:08:50.259 | INFO     | __main__:main:520 - early exits 45/110 (40.9%) for UAVSwarm-54
+2026-10-16 21:08:50.259 | INFO     | __main__:main:520 - early exits 17/89 (19.1%) for UAVSwarm-56
+2026-10-16 21:08:50.259 | INFO     | __main__:main:520 - early exits 44/122 (36.1%) for UAVSwarm-58
+2026-10-16 21:08:50.259 | INFO     | __main__:main:520 - early exits 39/68 (57.4%) for UAVSwarm-60
+2026-10-16 21:08:50.259 | INFO     | __main__:main:520 - early exits 80/140 (57.1%) for UAVSwarm-62
+2026-10-16 21:08:50.259 | INFO     | __main__:main:520 - early exits 40/75 (53.3%) for UAVSwarm-64
+2026-10-16 21:08:50.259 | INFO     | __main__:main:520 - early exits 46/73 (63.0%) for UAVSwarm-66
+2026-10-16 21:08:50.259 | INFO     | __main__:main:520 - early exits 0/59 (0.0%) for UAVSwarm-68
+2026-10-16 21:08:50.260 | INFO     | __main__:main:520 - early exits 71/307 (23.1%) for UAVSwarm-70
+2026-10-16 21:08:50.260 | INFO     | __main__:main:520 - early exits 199/705 (28.2%) for UAVSwarm-72
+2026-10-16 21:08:50.260 | INFO     | __main__:main:528 - early exits 1770/5754 (30.8%) | Effective GFLOPs: 29.16 | GFLOPs reduction: 19.30%
+2026-10-16 21:08:50.261 | INFO     | __main__:main:537 - Frame latency extremes | best: UAVSwarm-48 frame 87 (3.12 ms, 320.59 FPS) | worst: UAVSwarm-50 frame 114 (13.76 ms, 72.67 FPS)
+2026-10-16 21:08:50.738 | INFO     | __main__:compare_dataframes:112 - Comparing groundtruth and test dataframes.
+2026-10-16 21:08:52.342 | INFO     | __main__:main:560 - Running metrics
+2026-10-16 21:08:52.929 | INFO     | __main__:main:597 - ⚡ Energy Stats | Total: 1809.92 J | Per Frame: 359.61 mJ | Avg Power: 31.23 W
+2026-10-16 21:08:52.945 | INFO     | __main__:main:626 - Final Clean Latency: 7.86 ms/img | Clean FPS: 127.30
+2026-10-16 21:08:52.945 | INFO     | __main__:main:627 - Completed
+2026-10-16 21:12:58.636 | INFO     | __main__:main:345 - Args: Namespace(experiment_name='aerotrack_bytetrack_early_exit_nwd', name=None, dist_backend='nccl', dist_url=None, batch_size=1, devices=1, local_rank=0, num_machines=1, machine_rank=0, exp_file='exps/aerotrack_proposed.py', fp16=True, fuse=True, trt=True, torchscript=False, test=False, speed=False, opts=[], ckpt=None, conf=0.01, nms=0.69, tsize=640, seed=None, track_thresh=0.6, track_buffer=50, match_thresh=0.97, min_box_area=50, mot20=False, distance='nwd', tracker='bytetrack', reid_weights='weights/pretrained/ckpt.t7', save_vis=False, vis_output=None, vis_video=False, vis_fps=30, early_exit=True, monitor_energy=True)
+2026-10-16 21:12:59.093 | INFO     | __main__:main:354 - Model Summary: Params: 10.70M, FLOPs: 18.02G
+2026-10-16 21:12:59.161 | INFO     | __main__:ensure_coco_json_exists:152 - Fichier JSON valide trouvé : dataset/UAVSwarm/annotations/test.json
+2026-10-16 21:12:59.166 | INFO     | aerotrack.data.datasets.mot:__init__:41 - DEBUG: Chemin complet du fichier JSON chargé : dataset/UAVSwarm/annotations/test.json
+2026-10-16 21:12:59.166 | INFO     | aerotrack.data.datasets.mot:__init__:42 - DEBUG: Le fichier existe ? True
+2026-10-16 21:12:59.166 | INFO     | aerotrack.data.datasets.mot:__init__:43 - DEBUG: Taille du fichier : 6452593 octets
+2026-10-16 21:12:59.166 | INFO     | aerotrack.data.datasets.mot:__init__:45 - loading annotations into memory...
+2026-10-16 21:12:59.226 | INFO     | aerotrack.data.datasets.mot:__init__:45 - Done (t=0.06s)
+2026-10-16 21:12:59.226 | INFO     | pycocotools.coco:__init__:86 - creating index...
+2026-10-16 21:12:59.342 | INFO     | pycocotools.coco:__init__:86 - index created!
+2026-10-16 21:12:59.573 | INFO     | __main__:main:374 - ⚡ Loading Hardware-Accelerated Dynamic Routing Engine...
+2026-10-16 21:12:59.683 | INFO     | __main__:main:434 - ⏱️ Starting performance timer...
+2026-10-16 21:13:56.010 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-02.txt
+2026-10-16 21:13:56.049 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-04.txt
+2026-10-16 21:13:56.084 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-06.txt
+2026-10-16 21:13:56.095 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-08.txt
+2026-10-16 21:13:56.110 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-10.txt
+2026-10-16 21:13:56.116 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-12.txt
+2026-10-16 21:13:56.150 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-14.txt
+2026-10-16 21:13:56.176 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-16.txt
+2026-10-16 21:13:56.180 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-18.txt
+2026-10-16 21:13:56.183 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-20.txt
+2026-10-16 21:13:56.186 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-22.txt
+2026-10-16 21:13:56.187 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-24.txt
+2026-10-16 21:13:56.188 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-26.txt
+2026-10-16 21:13:56.204 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-28.txt
+2026-10-16 21:13:56.211 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-30.txt
+2026-10-16 21:13:56.218 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-32.txt
+2026-10-16 21:13:56.220 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-34.txt
+2026-10-16 21:13:56.228 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-36.txt
+2026-10-16 21:13:56.230 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-38.txt
+2026-10-16 21:13:56.255 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-40.txt
+2026-10-16 21:13:56.306 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-42.txt
+2026-10-16 21:13:56.311 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-44.txt
+2026-10-16 21:13:56.331 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-46.txt
+2026-10-16 21:13:56.356 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-48.txt
+2026-10-16 21:13:56.366 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-50.txt
+2026-10-16 21:13:56.393 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-52.txt
+2026-10-16 21:13:56.401 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-54.txt
+2026-10-16 21:13:56.410 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-56.txt
+2026-10-16 21:13:56.415 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-58.txt
+2026-10-16 21:13:56.426 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-60.txt
+2026-10-16 21:13:56.430 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-62.txt
+2026-10-16 21:13:56.437 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-64.txt
+2026-10-16 21:13:56.443 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-66.txt
+2026-10-16 21:13:56.446 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-68.txt
+2026-10-16 21:13:56.452 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-70.txt
+2026-10-16 21:13:56.462 | INFO     | aerotrack.evaluators.mot_evaluator:write_results:32 - saving results to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-72.txt
+2026-10-16 21:13:56.484 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-02_branch.csv
+2026-10-16 21:13:56.485 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-04_branch.csv
+2026-10-16 21:13:56.485 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-06_branch.csv
+2026-10-16 21:13:56.485 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-08_branch.csv
+2026-10-16 21:13:56.485 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-10_branch.csv
+2026-10-16 21:13:56.486 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-12_branch.csv
+2026-10-16 21:13:56.486 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-14_branch.csv
+2026-10-16 21:13:56.486 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-16_branch.csv
+2026-10-16 21:13:56.487 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-18_branch.csv
+2026-10-16 21:13:56.487 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-20_branch.csv
+2026-10-16 21:13:56.487 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-22_branch.csv
+2026-10-16 21:13:56.488 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-24_branch.csv
+2026-10-16 21:13:56.488 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-26_branch.csv
+2026-10-16 21:13:56.488 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-28_branch.csv
+2026-10-16 21:13:56.489 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-30_branch.csv
+2026-10-16 21:13:56.489 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-32_branch.csv
+2026-10-16 21:13:56.489 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-34_branch.csv
+2026-10-16 21:13:56.489 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-36_branch.csv
+2026-10-16 21:13:56.490 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-38_branch.csv
+2026-10-16 21:13:56.490 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-40_branch.csv
+2026-10-16 21:13:56.491 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-42_branch.csv
+2026-10-16 21:13:56.491 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-44_branch.csv
+2026-10-16 21:13:56.491 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-46_branch.csv
+2026-10-16 21:13:56.492 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-48_branch.csv
+2026-10-16 21:13:56.492 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-50_branch.csv
+2026-10-16 21:13:56.492 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-52_branch.csv
+2026-10-16 21:13:56.492 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-54_branch.csv
+2026-10-16 21:13:56.493 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-56_branch.csv
+2026-10-16 21:13:56.493 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-58_branch.csv
+2026-10-16 21:13:56.493 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-60_branch.csv
+2026-10-16 21:13:56.493 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-62_branch.csv
+2026-10-16 21:13:56.493 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-64_branch.csv
+2026-10-16 21:13:56.493 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-66_branch.csv
+2026-10-16 21:13:56.494 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-68_branch.csv
+2026-10-16 21:13:56.494 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-70_branch.csv
+2026-10-16 21:13:56.494 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate:248 - saving branch labels to /home/bninaos/UAV-Tracking-Project/AeroTrack/YOLOX_outputs/aerotrack_bytetrack_early_exit_nwd/track_results/UAVSwarm-72_branch.csv
+2026-10-16 21:13:56.498 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate_prediction:697 - DEBUG: Nombre total d'annotations trouvées dans le JSON : 37947
+2026-10-16 21:13:56.498 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate_prediction:702 - Evaluate in main process...
+2026-10-16 21:13:56.498 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate_prediction:703 - Nombre total de détections collectées : 51446
+2026-10-16 21:13:56.850 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate_prediction:733 - Loading and preparing results...
+2026-10-16 21:13:56.957 | INFO     | aerotrack.evaluators.mot_evaluator:evaluate_prediction:733 - DONE (t=0.11s)
+2026-10-16 21:13:56.957 | INFO     | pycocotools.coco:loadRes:367 - creating index...
+2026-10-16 21:13:57.156 | INFO     | pycocotools.coco:loadRes:367 - index created!
+2026-10-16 21:13:57.645 | INFO     | __main__:main:504 - 
+Average forward time: 6.27 ms, Average track time: 1.21 ms, Average inference time: 7.48 ms
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.422
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.878
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.352
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.411
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.493
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.316
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.089
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.423
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.497
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.487
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.559
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.325
+
+2026-10-16 21:13:57.645 | INFO     | __main__:main:520 - early exits 3/156 (1.9%) for UAVSwarm-02
+2026-10-16 21:13:57.645 | INFO     | __main__:main:520 - early exits 4/161 (2.5%) for UAVSwarm-04
+2026-10-16 21:13:57.645 | INFO     | __main__:main:520 - early exits 0/76 (0.0%) for UAVSwarm-06
+2026-10-16 21:13:57.645 | INFO     | __main__:main:520 - early exits 0/115 (0.0%) for UAVSwarm-08
+2026-10-16 21:13:57.645 | INFO     | __main__:main:520 - early exits 28/58 (48.3%) for UAVSwarm-10
+2026-10-16 21:13:57.646 | INFO     | __main__:main:520 - early exits 10/116 (8.6%) for UAVSwarm-12
+2026-10-16 21:13:57.646 | INFO     | __main__:main:520 - early exits 14/115 (12.2%) for UAVSwarm-14
+2026-10-16 21:13:57.646 | INFO     | __main__:main:520 - early exits 7/65 (10.8%) for UAVSwarm-16
+2026-10-16 21:13:57.646 | INFO     | __main__:main:520 - early exits 4/84 (4.8%) for UAVSwarm-18
+2026-10-16 21:13:57.646 | INFO     | __main__:main:520 - early exits 18/62 (29.0%) for UAVSwarm-20
+2026-10-16 21:13:57.646 | INFO     | __main__:main:520 - early exits 36/72 (50.0%) for UAVSwarm-22
+2026-10-16 21:13:57.646 | INFO     | __main__:main:520 - early exits 14/72 (19.4%) for UAVSwarm-24
+2026-10-16 21:13:57.647 | INFO     | __main__:main:520 - early exits 16/126 (12.7%) for UAVSwarm-26
+2026-10-16 21:13:57.647 | INFO     | __main__:main:520 - early exits 9/131 (6.9%) for UAVSwarm-28
+2026-10-16 21:13:57.647 | INFO     | __main__:main:520 - early exits 23/105 (21.9%) for UAVSwarm-30
+2026-10-16 21:13:57.647 | INFO     | __main__:main:520 - early exits 0/76 (0.0%) for UAVSwarm-32
+2026-10-16 21:13:57.647 | INFO     | __main__:main:520 - early exits 0/176 (0.0%) for UAVSwarm-34
+2026-10-16 21:13:57.647 | INFO     | __main__:main:520 - early exits 0/81 (0.0%) for UAVSwarm-36
+2026-10-16 21:13:57.647 | INFO     | __main__:main:520 - early exits 340/452 (75.2%) for UAVSwarm-38
+2026-10-16 21:13:57.647 | INFO     | __main__:main:520 - early exits 165/448 (36.8%) for UAVSwarm-40
+2026-10-16 21:13:57.647 | INFO     | __main__:main:520 - early exits 2/120 (1.7%) for UAVSwarm-42
+2026-10-16 21:13:57.647 | INFO     | __main__:main:520 - early exits 195/353 (55.2%) for UAVSwarm-44
+2026-10-16 21:13:57.648 | INFO     | __main__:main:520 - early exits 31/238 (13.0%) for UAVSwarm-46
+2026-10-16 21:13:57.648 | INFO     | __main__:main:520 - early exits 155/221 (70.1%) for UAVSwarm-48
+2026-10-16 21:13:57.648 | INFO     | __main__:main:520 - early exits 56/170 (32.9%) for UAVSwarm-50
+2026-10-16 21:13:57.648 | INFO     | __main__:main:520 - early exits 59/157 (37.6%) for UAVSwarm-52
+2026-10-16 21:13:57.648 | INFO     | __main__:main:520 - early exits 45/110 (40.9%) for UAVSwarm-54
+2026-10-16 21:13:57.648 | INFO     | __main__:main:520 - early exits 17/89 (19.1%) for UAVSwarm-56
+2026-10-16 21:13:57.648 | INFO     | __main__:main:520 - early exits 44/122 (36.1%) for UAVSwarm-58
+2026-10-16 21:13:57.648 | INFO     | __main__:main:520 - early exits 39/68 (57.4%) for UAVSwarm-60
+2026-10-16 21:13:57.648 | INFO     | __main__:main:520 - early exits 80/140 (57.1%) for UAVSwarm-62
+2026-10-16 21:13:57.648 | INFO     | __main__:main:520 - early exits 40/75 (53.3%) for UAVSwarm-64
+2026-10-16 21:13:57.648 | INFO     | __main__:main:520 - early exits 46/73 (63.0%) for UAVSwarm-66
+2026-10-16 21:13:57.648 | INFO     | __main__:main:520 - early exits 0/59 (0.0%) for UAVSwarm-68
+2026-10-16 21:13:57.648 | INFO     | __main__:main:520 - early exits 71/307 (23.1%) for UAVSwarm-70
+2026-10-16 21:13:57.648 | INFO     | __main__:main:520 - early exits 199/705 (28.2%) for UAVSwarm-72
+2026-10-16 21:13:57.649 | INFO     | __main__:main:528 - early exits 1770/5754 (30.8%) | Effective GFLOPs: 29.16 | GFLOPs reduction: 19.30%
+2026-10-16 21:13:57.650 | INFO     | __main__:main:537 - Frame latency extremes | best: UAVSwarm-62 frame 81 (3.11 ms, 321.13 FPS) | worst: UAVSwarm-38 frame 357 (225.32 ms, 4.44 FPS)
+2026-10-16 21:13:58.130 | INFO     | __main__:compare_dataframes:112 - Comparing groundtruth and test dataframes.
+2026-10-16 21:13:59.736 | INFO     | __main__:main:560 - Running metrics
+2026-10-16 21:14:00.326 | INFO     | __main__:main:597 - ⚡ Energy Stats | Total: 1797.71 J | Per Frame: 357.18 mJ | Avg Power: 31.28 W
+2026-10-16 21:14:00.341 | INFO     | __main__:main:626 - Final Clean Latency: 7.86 ms/img | Clean FPS: 127.26
+2026-10-16 21:14:00.341 | INFO     | __main__:main:627 - Completed

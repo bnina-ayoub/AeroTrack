@@ -6,12 +6,17 @@ env/
 dataset/
 weights/
 YOLOX_outputs/
+!YOLOX_outputs/
+!YOLOX_outputs/**
 aerotrack.egg-info/
 # Fichiers générés automatiquement par Python (Recommandé)
 __pycache__/
 *.pyc
 *.pyo
-
+.trt
+!deep_stage_fp16.trt
+!early_stage_fp16.trt
+.so
 # Fichiers système (Recommandé)
 .DS_Store
 Thumbs.db

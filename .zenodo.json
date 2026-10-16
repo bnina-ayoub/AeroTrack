@@ -1,0 +1,21 @@
+{
+  "title": "AeroTrack: Adaptive-Compute Visual Tracking for Counter-UAV Swarm Sensing",
+  "description": "AeroTrack source code and reproducibility metadata for the v1.0 paper results.",
+  "creators": [
+    {
+      "name": "Ayoub, Bnina"
+    },
+    {
+      "name": "Jerad, Chadlia"
+    }
+  ],
+  "license": "MIT",
+  "version": "1.0",
+  "publication_date": "2026-08-25",
+  "keywords": [
+    "UAV tracking",
+    "multi-object tracking",
+    "TensorRT",
+    "edge computing"
+  ]
+}

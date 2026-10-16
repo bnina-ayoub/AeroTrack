@@ -1,0 +1,10 @@
+# Jetson environment for the archived later run.
+# The archived board is an NVIDIA Jetson Nano.
+TensorRT=
+CUDA=
+NVIDIA_driver=
+JetPack=4.6.6
+L4T=32.7.6
+Python=
+PyTorch=
+GPU=

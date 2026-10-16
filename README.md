@@ -17,7 +17,35 @@ AeroTrack is a UAV multi-object tracking framework built on top of YOLOX + ByteT
 ![AeroTrack Architecture](docs/assets/aerotrack_main_arch.png)
 
 
-### UAVSwarm Workstation Benchmark: Temporal Bounds, Throughput, and Energy Telemetry
+## Paper results (v1.0)
+
+These are the values reported in Table V of the paper. The workstation and
+Jetson measurements are kept separate because they are not directly
+comparable.
+
+### UAVSwarm workstation
+
+| Architecture | Distance | Min latency (ms) | Mean latency (ms) | Max latency (ms) | FPS | Mean power (W) | Total energy (J) |
+|:---|:---|---:|---:|---:|---:|---:|---:|
+| Baseline | IoU | 6.7 | 8.5 | 215.0 | 117.2 | 33.1 | 1983.9 |
+| Baseline | NWD | 6.4 | 8.5 | 208.0 | 117.9 | 33.2 | 1983.9 |
+| Early Exit | IoU | 2.9 | 7.7 | 199.2 | 130.7 | 33.0 | 1807.1 |
+| **AeroTrack** | **NWD** | **2.9** | **7.7** | **213.0** | **130.7** | **32.8** | **1821.6** |
+
+### Jetson
+
+| Architecture | Distance | Min latency (ms) | Mean latency (ms) | Max latency (ms) | FPS | Mean power (W) | Total energy (J) |
+|:---|:---|---:|---:|---:|---:|---:|---:|
+| Baseline | IoU | 178.1 | 187.9 | 226.4 | 5.3 | 6.4 | 8924.9 |
+| Baseline | NWD | 188.5 | 199.1 | 243.0 | 5.0 | 6.6 | 9641.3 |
+| Early Exit | IoU | 68.6 | 157.1 | 230.1 | 6.4 | 6.3 | 7754.4 |
+| **AeroTrack** | **NWD** | **65.8** | **152.6** | **240.6** | **6.6** | **6.2** | **7389.6** |
+
+## Later run (2026-09-02)
+
+This later workstation run reported 9.0/8.2 ms mean latency rather than the
+Table V values above. The relative AeroTrack gain remained about 9%; the
+difference is run-to-run variation, not a change to the method.
 
 | Architecture | Distance | BCET (ms) | Avg (ms) | WCET (ms) | FPS | Peak (W) | Avg (W) | Total (J) | Frame (J) |
 |:---|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
