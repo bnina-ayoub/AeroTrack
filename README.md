@@ -257,20 +257,6 @@ Key files:
 
 ---
 
-## Model Weights Policy (Recommended)
-
-**Do not commit large trained weights directly to git history.**
-
-For open-source usability, publish at least one reproducible inference checkpoint via **GitHub Releases** (or a stable external host) and add the download link here. This gives users immediate reproducibility without bloating the repository.
-
-Suggested release items:
-
-- `aerotrack_best.pth` (PyTorch checkpoint)
-- Optional TensorRT engines for a specific hardware target (clearly labeled)
-- SHA256 checksum + short note of the exact experiment file/commit used
-
----
-
 ## Citation
 
 ```bibtex
