@@ -1,11 +1,17 @@
 cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+
 title: "AeroTrack: Adaptive-Compute Visual Tracking for Counter-UAV Swarm Sensing"
+version: "v1.0-paper"
+date-released: 2026-10-17
+license: MIT
+
 authors:
   - family-names: Ayoub
     given-names: Bnina
   - family-names: Jerad
     given-names: Chadlia
-version: "1.0"
-date-released: 2026-08-25
-license: MIT
+
 repository-code: "https://github.com/bnina-ayoub/AeroTrack"
+doi: "10.5281/zenodo.23440607"
+url: "https://doi.org/10.5281/zenodo.23440607"
